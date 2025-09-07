@@ -5,4 +5,4 @@ Mala-restaurant-management-system
 | นายปัณณวัฒน์ หวังมนตรี              | Project Owner  |
 | นางสาวฐิติรัตน์ จันทา       |Scrum Master                            |
 | นางสาวนิตยา ปานา           | ux ui desingner                            |
-| นายเปลวตัวัน สั่งการ      | / Developer                           |
+| นายเปลวตัวัน สั่งการ      |  Developer                           |
