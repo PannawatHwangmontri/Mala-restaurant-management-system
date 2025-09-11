@@ -3,7 +3,7 @@
 # Member
 | สมาชิก                          | ตำแหน่ง          |
 |:--------------------------------|:-----------------|
-| นายปิณณวัฒน์ หวังมนตรี          | Project Owner/Scrum Master    |
+| นายปิณณวัฒน์ หวังมนตรี          | Product Owner/Scrum Master    |
 | นางสาวฐิติรัตน์ จันทา           |business analyst      |
 | นางสาวนิตยา ปานา               | UX UI Designer   |
 | นายเปลวตวัน สังการ             | Developer        |
