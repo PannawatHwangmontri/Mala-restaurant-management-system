@@ -8,8 +8,8 @@
 # Member
 | สมาชิก                          | ตำแหน่ง          |
 |:--------------------------------|:-----------------|
-| นายปิณณวัฒน์ หวังมนตรี          | Product Owner/Scrum Master    |
-| นางสาวฐิติรัตน์ จันทา           |business analyst      |
-| นางสาวนิตยา ปานา               | UX UI Designer   |
+| นายปิณณวัฒน์ หวังมนตรี          | Product Owner/business analyst    |
+| นางสาวฐิติรัตน์ จันทา           |business analyst/Scrum Master      |
+| นางสาวนิตยา ปานา               | UX UI Designer/business analyst   |
 | นายเปลวตวัน สังการ             | Developer        |
 
