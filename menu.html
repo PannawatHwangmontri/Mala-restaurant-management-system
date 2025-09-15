@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เมนู</title>
+</head>
+<body>
+  <h2>เมนู</h2>
+  <h3><button>ตารางออเดอร์</button>
+  <button>จัดการสินค้า</button></h3>
+
+  <div class="menu-item">
+    <img src="">
+    <p>ลูกชิ้น - 5 บาท</p>
+    <button onclick="addToCart('ลูกชิ้น', 5)">เพิ่ม</button>
+  </div>
+  <div class="menu-item">
+    <img src="">
+    <p>ไส้กรอกชีส - 5 บาท</p>
+    <button onclick="addToCart('ไส้กรอกชีส', 5)">เพิ่ม</button>
+  </div>
+  <div class="menu-item">
+    <img src="">
+    <p>ข้าวโพดอ่อน - 5 บาท</p>
+    <button onclick="addToCart('ข้าวโพดอ่อน', 5)">เพิ่ม</button>
+  </div>
+  <div class="menu-item">
+    <img src="">
+    <p>บลอกโคลี - 5 บาท</p>
+    <button onclick="addToCart('บลอกโคลี', 5)">เพิ่ม</button>
+  </div>
+
+  <br>
+  <a href="cart.html">ไปที่ตะกร้า</a>
+
+  <script>
+    function addToCart(name, price) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let item = cart.find(i => i.name === name);
+      if (item) {
+        item.qty++;
+      } else {
+        cart.push({ name, price, qty: 1 });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("เพิ่ม " + name + " ลงในตะกร้าแล้ว");
+    }
+  </script>
+</body>
+</html>

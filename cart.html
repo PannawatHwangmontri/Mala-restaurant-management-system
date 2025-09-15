@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>สรุปคำสั่งซื้อ</title>
+</head>
+<body>
+  <h2>สรุปคำสั่งซื้อ</h2>
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>เมนู</th>
+        <th>จำนวน</th>
+        <th>ราคา</th>
+      </tr>
+    </thead>
+    <tbody id="cartTable"></tbody>
+  </table>
+  <p id="summary"></p>
+  
+  <a href="order.html"><button onclick="placeOrder()">สั่งซื้อ</button></a>
+  <a href="menu.html">กลับไปเมนู</a>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartTable = document.getElementById("cartTable");
+    let summary = document.getElementById("summary");
+
+    let totalQty = 0;
+    let totalPrice = 0;
+
+    cart.forEach(item => {
+      let row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.qty}</td>
+        <td>${item.price * item.qty}</td>
+      `;
+      cartTable.appendChild(row);
+
+      totalQty += item.qty;
+      totalPrice += item.price * item.qty;
+    });
+
+    summary.innerText = `รวมทั้งหมด: ${totalQty} ไม้ | ${totalPrice} บาท`;
+
+    function placeOrder() {
+      let orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.push({ cart, totalQty, totalPrice, time: new Date().toLocaleString() });
+      localStorage.setItem("orders", JSON.stringify(orders));
+      localStorage.removeItem("cart");
+      window.location.href = "orders.html";
+    }
+  </script>
+</body>
+</html>
