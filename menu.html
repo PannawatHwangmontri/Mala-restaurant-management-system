@@ -3,37 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <title>เมนู</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #fafafa;
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    .menu-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 30px;
+      padding: 10px 30px;
+    }
+    .menu-column {
+      width: 45%;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .menu-column h3 {
+      text-align: center;
+      background-color: #f2f2f2;
+      border-radius: 6px;
+      padding: 6px;
+      color: #333;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      padding: 8px 0;
+    }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .menu-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .menu-info {
+      flex-grow: 1;
+      text-align: left;
+    }
+    .menu-info p {
+      margin: 0;
+      font-size: 15px;
+    }
+    .menu-item button {
+      padding: 5px 10px;
+      background-color: #22c55e;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .menu-item button:hover {
+      background-color: #16a34a;
+    }
+    .cart-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #3b82f6;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h2>เมนู</h2>
-  <h3><button>ตารางออเดอร์</button>
-  <button>จัดการสินค้า</button></h3>
 
-  <div class="menu-item">
-    <img src="">
-    <p>ลูกชิ้น - 5 บาท</p>
-    <button onclick="addToCart('ลูกชิ้น', 5)">เพิ่ม</button>
-  </div>
-  <div class="menu-item">
-    <img src="">
-    <p>ไส้กรอกชีส - 5 บาท</p>
-    <button onclick="addToCart('ไส้กรอกชีส', 5)">เพิ่ม</button>
-  </div>
-  <div class="menu-item">
-    <img src="">
-    <p>ข้าวโพดอ่อน - 5 บาท</p>
-    <button onclick="addToCart('ข้าวโพดอ่อน', 5)">เพิ่ม</button>
-  </div>
-  <div class="menu-item">
-    <img src="">
-    <p>บลอกโคลี - 5 บาท</p>
-    <button onclick="addToCart('บลอกโคลี', 5)">เพิ่ม</button>
+  <div class="menu-container">
+    
+    <div class="menu-column">
+      <h3>🥩 ของสด</h3>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="ลูกชิ้น">
+        <div class="menu-info"><p>ลูกชิ้น - 5 บาท</p></div>
+        <button onclick="addToCart('ลูกชิ้น', 5)">เพิ่ม</button>
+      </div>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/1999/1999054.png" alt="ไส้กรอกชีส">
+        <div class="menu-info"><p>ไส้กรอกชีส - 5 บาท</p></div>
+        <button onclick="addToCart('ไส้กรอกชีส', 5)">เพิ่ม</button>
+      </div>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/263/263115.png" alt="เนื้อหมู">
+        <div class="menu-info"><p>เนื้อหมู - 5 บาท</p></div>
+        <button onclick="addToCart('เนื้อหมู', 5)">เพิ่ม</button>
+      </div>
+    </div>
+
+   
+    <div class="menu-column">
+      <h3>🥦 ผัก</h3>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/701/701964.png" alt="ข้าวโพดอ่อน">
+        <div class="menu-info"><p>ข้าวโพดอ่อน - 5 บาท</p></div>
+        <button onclick="addToCart('ข้าวโพดอ่อน', 5)">เพิ่ม</button>
+      </div>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/765/765613.png" alt="บลอกโคลี">
+        <div class="menu-info"><p>บลอกโคลี - 5 บาท</p></div>
+        <button onclick="addToCart('บลอกโคลี', 5)">เพิ่ม</button>
+      </div>
+
+      <div class="menu-item">
+        <img src="https://cdn-icons-png.flaticon.com/512/2362/2362569.png" alt="เห็ดเข็มทอง">
+        <div class="menu-info"><p>เห็ดเข็มทอง - 5 บาท</p></div>
+        <button onclick="addToCart('เห็ดเข็มทอง', 5)">เพิ่ม</button>
+      </div>
+    </div>
   </div>
 
-  <br>
-  <a href="cart.html">ไปที่ตะกร้า</a>
+  <a href="cart.html" class="cart-link">🛒 ไปที่ตะกร้า</a>
 
   <script>
+let deletedItems = JSON.parse(localStorage.getItem("deletedItems")) || [];
+
+function createMenuItem(name, price) {
+  if (deletedItems.includes(name)) return ''; 
+  return `
+    <div class="menu-item">
+      <img src="" alt="${name}">
+      <div class="menu-info"><p>${name} - ${price} บาท</p></div>
+      <button onclick="addToCart('${name}', ${price})">เพิ่ม</button>
+    </div>
+  `;
+}
+
     function addToCart(name, price) {
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
       let item = cart.find(i => i.name === name);
