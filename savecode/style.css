@@ -70,6 +70,10 @@ main {
   font-size: 2em;
 }
 
+.menu-panel {
+  margin-top: 20px;
+}
+
 .menu-category {
   display: flex;
   flex-direction: column;
@@ -207,6 +211,7 @@ main {
   box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
   transform: translateY(100%); /* ซ่อนไว้ตอนเริ่มต้น */
   transition: transform 0.3s ease-out;
+  z-index: 990;
 }
 
 .order-bar--active {
@@ -218,6 +223,8 @@ main {
   gap: 20px;
   font-size: 1.1em;
   font-weight: 500;
+  /* ปรับ gap/justify ใหม่ถ้าต้องการให้ดูดีขึ้นเมื่อไม่มีเผ็ด */
+  /* justify-content: flex-start; */
 }
 
 .order-bar .btn-primary {
@@ -240,6 +247,8 @@ main {
   background-color: #8d8d8d;
 }
 
+/* ✅ ลบ CSS ที่เกี่ยวข้องกับความเผ็ดใน Order Bar และ Modal ออก */
+/*
 .selected-spicy-display {
     font-weight: 400;
 }
@@ -255,40 +264,37 @@ main {
 .chip--mild { background-color: #8c8c8c; color: white; }
 .chip--medium { background-color: #ffb169; color: var(--text); }
 .chip--hot { background-color: #c90000; color: white; }
+*/
 
 
 /* ----------------------------------------
    Modal/Popup (Summary)
 ---------------------------------------- */
 .popup-modal {
-  /* ✅ แก้ไข: ทำให้ Modal แสดงเต็มหน้าจอและอยู่ตรงกลาง */
-  display: none; /* ควบคุมการแสดงผลด้วย JS */
+  display: none; 
   position: fixed;
-  z-index: 1000; /* ให้อยู่ด้านบนสุด */
+  z-index: 1000; 
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.6); /* ฉากหลังทึบ */
+  background-color: rgba(0, 0, 0, 0.6); 
   
-  /* จัดให้อยู่ตรงกลางจอ */
-  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .popup {
-  /* ✅ แก้ไข: Modal Card */
   background-color: white;
-  margin: 0; /* ลบ margin เดิมที่ทำให้ไม่ตรงกลาง */
+  margin: 0;
   padding: 30px;
   border-radius: var(--r-lg);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  max-width: 650px; /* จำกัดความกว้าง */
+  max-width: 650px; 
   width: 90%;
   position: relative;
-  max-height: 90vh; /* จำกัดความสูง */
+  max-height: 90vh; 
   display: flex;
   flex-direction: column;
 }
@@ -320,7 +326,7 @@ main {
 }
 
 .popup__content {
-  overflow-y: auto; /* ทำให้เนื้อหาสามารถ Scroll ได้ */
+  overflow-y: auto; 
   flex-grow: 1;
 }
 
@@ -382,45 +388,6 @@ main {
 .btn-remove-item:hover {
     background-color: #ff6a6a;
 }
-
-
-/* Spicy Level Selection */
-.popup__section--spicy {
-  border-top: 2px solid var(--mala-red);
-  margin-top: 15px;
-}
-.spicy-group {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.spicy-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.spicy-option input[type="radio"] {
-  display: none;
-}
-
-.spicy-option .chip {
-  padding: 5px 15px;
-  border-radius: var(--r-pill);
-  font-weight: 600;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.spicy-option input[type="radio"]:checked + .chip {
-  /* เมื่อถูกเลือก */
-  border-color: var(--orange);
-  box-shadow: var(--ring);
-}
-.spicy-option input[value="mild"]:checked + .chip { background-color: #8c8c8c; color: white; }
-.spicy-option input[value="medium"]:checked + .chip { background-color: #ffb169; color: var(--text); }
-.spicy-option input[value="hot"]:checked + .chip { background-color: #c90000; color: white; }
 
 
 /* Footer Actions */
@@ -492,7 +459,7 @@ main {
     .table--summary-head, .tr--summary-item {
         grid-template-columns: 2fr 1.5fr 1fr 1fr; /* ซ่อนราคาต่อไม้, ลบรวมกับรายการ*/
     }
-    .th-price, .td-price-per-unit {
+    .th-price-per-unit, .td-price-per-unit {
         display: none;
     }
     .td-menu {
@@ -508,8 +475,5 @@ main {
     }
     .footer-right button {
         width: 100%;
-    }
-    .spicy-group {
-        flex-wrap: wrap;
     }
 }

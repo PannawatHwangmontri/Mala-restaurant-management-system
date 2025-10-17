@@ -352,7 +352,388 @@ body {
     .table--list-head .th-datetime, .order-row .td-datetime { width: auto; } 
     .table--list-head .th-total, .order-row .td-total { width: auto; } 
     .table--list-head .th-status, .order-row .td-status { width: auto; } 
+    .table--list-head/* order-table.css */
+:root {
+  --bg-top: #1d1c20;
+  --bg-bottom: #6e1017;
+  --panel-bg: #f6e6e9; /* สีพื้นหลังใหญ่ของ Panel */
+  --header-bg: #c90000; /* สีแดงของแถบ Nav */
+  --header-text: #ffffff;
+  --table-head-bg: #ffffff; /* สีพื้นหลังหัวตาราง */
+  --table-row-bg: #fdf6f7; /* สีพื้นหลังแถวตาราง */
+  --btn-cancel: #c90000; /* สียกเลิก */
+  --btn-confirm: #358d3d; /* สียืนยัน */
+  --btn-complete: #2a6496; /* สีใหม่: สำหรับเสร็จสิ้น (น้ำเงิน) */
+  --r-lg: 28px;
+  --r-md: 18px;
+  --r-pill: 999px; 
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.12);
+  --mala-red: #c90000; 
+  --table-detail-head-bg: #e0e0e0; /* สีพื้นหลังหัวตารางรายละเอียด */
+  --text-dark: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Prompt', sans-serif; 
+    line-height: 1.6;
+    background: linear-gradient(to bottom, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    min-height: 100vh;
+    color: var(--text-dark);
+}
+
+.logo-container {
+    text-align: center;
+    padding: 20px 0;
+}
+.site-logo {
+    width: 150px;
+    height: auto;
+    border-radius: var(--r-md);
+}
+
+/* Management Layout */
+.management-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--panel-bg);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* ตารางรายการ 2 ส่วน, รายละเอียด 1 ส่วน */
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    grid-template-areas: 
+        "nav nav"
+        "list detail";
+    min-height: 80vh;
+}
+
+/* Admin Nav */
+.admin-nav {
+    grid-area: nav;
+    display: flex;
+    background-color: var(--header-bg);
+    border-radius: var(--r-md);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+.nav-btn {
+    text-decoration: none;
+    color: var(--header-text);
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 1.1em;
+    border-radius: var(--r-md);
+    transition: background-color 0.2s;
+}
+.nav-btn:hover { background-color: rgba(255,255,255,0.1); }
+.nav-btn--active {
+    background-color: rgba(0,0,0,0.2);
+    font-weight: 700;
+}
+
+/* Order List Panel */
+.order-list-panel {
+    grid-area: list;
+    background-color: #ffffff;
+    border-radius: var(--r-md);
+    padding: 15px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+}
+.section-title {
+    font-size: 1.5em;
+    color: var(--mala-red);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Status Filter */
+.nav-status-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.nav-btn-status {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    color: var(--text-dark);
+    padding: 8px 15px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.nav-btn-status:hover:not(.active) {
+    background: #e0e0e0;
+}
+.nav-btn-status.active {
+    background: var(--mala-red);
+    color: var(--header-text);
+    border-color: var(--mala-red);
+    font-weight: 600;
+}
+
+/* List Table Structure */
+.table--list-head {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-head-bg);
+    padding: 10px;
+    font-weight: 700;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    border-bottom: 2px solid #ccc;
+}
+.order-list-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.th, .td {
+    text-align: center;
+    padding: 5px;
+}
+.order-row {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-row-bg);
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.1s, box-shadow 0.2s;
+}
+.order-row:hover {
+    background-color: #f7e9eb;
+    box-shadow: 0 0 5px rgba(201, 0, 0, 0.2);
+}
+.order-row.selected {
+    background-color: #fff0f5;
+    border-left: 5px solid var(--mala-red);
+    padding-left: 0;
+}
+.order-row.selected .td-id {
+    padding-left: calc(5px - 5px); /* ชดเชย border-left */
+}
+
+/* Status Chips in List */
+.td-status span {
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+    font-size: 0.8em;
+    font-weight: 600;
+}
+.status-pending { background-color: #fff2cc; color: #b45f06; }
+.status-confirmed { background-color: #d9edf7; color: #31708f; }
+.status-completed { background-color: #dff0d8; color: #3c763d; }
+.status-cancelled { background-color: #f2dede; color: #a94442; }
+
+/* Order Detail Panel */
+.order-detail-panel {
+    grid-area: detail;
+    background-color: #ffffff;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+/* Placeholder message when no order is selected */
+.order-detail-panel.empty:after {
+    content: "กรุณาเลือกออเดอร์จากรายการ";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 1.2em;
+    color: #aaa;
+    text-align: center;
+    padding: 50px;
+}
+.order-detail-panel.empty > :not(.detail-header) {
+    display: none;
+}
+
+
+/* Detail Header */
+.detail-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.detail-id {
+    font-size: 1.5em;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+.order-meta {
+    font-size: 0.9em;
+    color: #666;
+}
+.order-meta-time {
+    margin-left: 5px;
+    font-weight: 500;
+}
+
+/* Detail Body (Item List) */
+.detail-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.detail-body .section-title {
+    font-size: 1.1em;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* Item Detail Table */
+.table--item-detail-head {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    background-color: var(--table-detail-head-bg);
+    padding: 8px 0;
+    font-weight: 600;
+    border-radius: 5px 5px 0 0;
+}
+
+.tr--item-detail {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    border-bottom: 1px dotted #ccc;
+    padding: 5px 0;
+}
+
+.td-menu-detail { text-align: left; padding-left: 5px; font-weight: 500; }
+.td-qty-detail, .td-price-detail, .td-total-detail { font-weight: 600; }
+.td-price-detail { font-size: 0.9em; color: #888; }
+
+
+/* Footer and Summary */
+.order-panel-footer {
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+}
+
+.footer-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    padding: 5px 0;
+}
+
+.spicy-level-box p {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.spicy-chip {
+    padding: 5px 10px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    font-size: 0.9em;
+}
+.spicy-chip--mild { background-color: #e6f7d9; color: #38761d; }
+.spicy-chip--medium { background-color: #fff2cc; color: #b45f06; }
+.spicy-chip--hot { background-color: #fce5cd; color: #990000; }
+
+.totals-box {
+    text-align: right;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.total-qty-pill, .total-price-pill {
+    background-color: #f7e1e6;
+    color: var(--mala-red);
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+}
+
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+.btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--r-pill);
+    color: var(--header-text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, background-color 0.2s;
+    font-size: 1em;
+}
+.btn--cancel {
+    background: var(--btn-cancel);
+}
+.btn--confirm {
+    background: var(--btn-confirm);
+}
+.btn--complete {
+    background: var(--btn-complete); /* สไตล์ปุ่มใหม่ */
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 850px) {
+    .management-container {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "nav"
+            "list"
+            "detail";
+    }
+    .table--list-head .th-spicy, .order-row .td-spicy { display: none; } /* ซ่อนคอลัมน์เผ็ดในตารางรายการ */
+    
+    /* ปรับคอลัมน์ตารางรายการ (สำหรับมือถือ 5 คอลัมน์) */
+    .table--list-head, .order-row {
+        grid-template-columns: 1fr 2fr 1fr 1.5fr 1.5fr; 
+    }
+    .table--list-head .th-id, .order-row .td-id { width: auto; } 
+    .table--list-head .th-datetime, .order-row .td-datetime { width: auto; } 
+    .table--list-head .th-total, .order-row .td-total { width: auto; } 
+    .table--list-head .th-status, .order-row .td-status { width: auto; } 
     .table--list-head .th-qty, .order-row .td-qty { width: auto; } 
+
+    .footer-summary-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .action-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-status-filter {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+    }
+    .nav-btn-status {
+        font-size: 0.8em;
+        text-align: center;
+        padding: 6px 10px;
+    }
+    .table--list-head .th-qty, .order-row .td-qty { display: none; } /* ซ่อนจำนวนไม้รวมสำหรับจอเล็กมากๆ */
+    .table--list-head, .order-row {
+        grid-template-columns: 1fr 2fr 1.5fr 1.5fr; /* 4 คอลัมน์ที่เหลือ */
+    }
+} .th-qty, .order-row .td-qty { width: auto; } 
 
     .footer-summary-row {
         flex-direction: column;

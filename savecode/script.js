@@ -1,8 +1,8 @@
-// script.js - โค้ดที่แก้ไขและสมบูรณ์
+// script.js - ลบ Logic ความเผ็ดออก
 (() => {
   // Local Storage Keys
   const STORAGE_KEY = 'mala_cart_v1';
-  const STORAGE_SPICY = 'mala_spicy_v1';
+  // ✅ ลบ: const STORAGE_SPICY = 'mala_spicy_v1';
   const ORDERS_STORAGE_KEY = 'mala_all_orders_v1';
   const LAST_ORDER_ID_KEY = 'mala_last_order_id';
 
@@ -20,10 +20,10 @@
   const rowTemplate = document.getElementById('summaryRowTemplate');
   const closeModalBtns = modal.querySelectorAll('[data-close="true"]');
   const placeOrderBtn = document.getElementById('placeOrder');
-  const spicyDisplayChip = document.querySelector('.selected-spicy-display .spicy-chip');
+  // ✅ ลบ: const spicyDisplayChip = document.querySelector('.selected-spicy-display .spicy-chip');
 
 
-  const spicyInputs = Array.from(document.querySelectorAll('input[name="spicy"]'));
+  // ลบ: const spicyInputs = Array.from(document.querySelectorAll('input[name="spicy"]'));
   const itemNodes = Array.from(document.querySelectorAll('.item'));
 
   // เตรียมข้อมูลรายการสินค้า (Item Data Structure)
@@ -38,7 +38,6 @@
     const item = itemData.find(i => i.id === node.dataset.id);
     return {
       ...item,
-      // ✅ การเชื่อมต่อกับปุ่ม + / - ที่ใช้ class ใหม่ใน main.html
       qtyInput: node.querySelector('.qty-input'),
       minusBtn: node.querySelector('.btn-minus'),
       plusBtn: node.querySelector('.btn-plus'),
@@ -83,13 +82,7 @@
     updateUI();
   }
 
-  function getSpicy() {
-    return localStorage.getItem(STORAGE_SPICY) || 'mild';
-  }
-
-  function saveSpicy(level) {
-    localStorage.setItem(STORAGE_SPICY, level);
-  }
+  // ✅ ลบ: getSpicy, saveSpicy
 
   // ฟังก์ชัน: สร้าง Order ID ใหม่
   function getNextOrderId() {
@@ -174,25 +167,7 @@
     }
   }
 
-  function updateSpicyUI(level) {
-    const levelMap = {
-      'mild': { text: 'น้อย', class: 'chip--mild' },
-      'medium': { text: 'ปานกลาง', class: 'chip--medium' },
-      'hot': { text: 'มาก', class: 'chip--hot' },
-    };
-
-    const info = levelMap[level];
-
-    // อัพเดท Chip ที่แสดงในแถบด้านล่าง
-    spicyDisplayChip.textContent = info.text;
-    spicyDisplayChip.className = `spicy-chip ${info.class}`;
-
-    // อัพเดท Radio Button ใน Modal
-    const radioBtn = document.querySelector(`input[name="spicy"][value="${level}"]`);
-    if(radioBtn) {
-      radioBtn.checked = true;
-    }
-  }
+  // ✅ ลบ: updateSpicyUI
 
   function updateModalSummary() {
     summaryList.innerHTML = ''; // Clear previous list
@@ -201,8 +176,7 @@
     let totalPrice = 0;
 
     Array.from(cart.values()).forEach(item => {
-      // ใช้ cloneNode(true) เพื่อให้ได้ Template ที่มี Event Listener ที่จะใส่ได้
-      const row = orderRowTemplate.content.cloneNode(true);
+      const row = rowTemplate.content.cloneNode(true);
       const total = item.qty * item.price;
 
       row.querySelector('.td-menu').textContent = item.name;
@@ -210,11 +184,9 @@
       row.querySelector('.td-price-per-unit').textContent = item.price.toLocaleString('th-TH');
       row.querySelector('.td-total-price').textContent = total.toLocaleString('th-TH');
       
-      // เพิ่มปุ่มลบใน Modal Summary
       const removeBtn = row.querySelector('.btn-remove-item');
       if (removeBtn) {
           removeBtn.addEventListener('click', () => {
-              // ลบรายการในตะกร้าทันที
               cart.delete(item.id);
               saveCart();
               updateUI();
@@ -242,7 +214,6 @@
   
   // ฟังก์ชัน: ส่งออเดอร์ (บันทึก Local Storage)
   async function placeOrder() {
-    // ปิดปุ่มทันทีเพื่อป้องกันการส่งซ้ำ
     placeOrderBtn.disabled = true;
 
     if (cart.size === 0) {
@@ -269,7 +240,7 @@
       id: newOrderId,
       orderDate: new Date().toISOString(),
       status: 'pending',
-      spicyLevel: getSpicy(),
+      // ✅ ลบ: spicyLevel: getSpicy(),
       items: orderItems,
       totalCount: totalCount,
       totalPrice: totalPrice,
@@ -298,26 +269,15 @@
 
   // Add event listeners
  itemUI.forEach(item => {
-  // ✅ ใช้ event listener ที่ถูกต้องเพื่อเรียก updateItemQty
   item.minusBtn.addEventListener('click', () => updateItemQty(item.id, -1));
   item.plusBtn.addEventListener('click', () => updateItemQty(item.id, 1));
-});
-
-// Event Listener สำหรับปุ่มเผ็ดใน Modal
-spicyInputs.forEach(input => {
-    input.addEventListener('change', (e) => {
-        const newLevel = e.target.value;
-        saveSpicy(newLevel);
-        updateSpicyUI(newLevel);
-    });
 });
 
 openSummaryBtn.addEventListener('click', () => {
   if (cart.size > 0) {
       updateModalSummary();
-      // ดึงระดับความเผ็ดล่าสุดจาก Local Storage มาอัพเดท Radio Button
-      updateSpicyUI(getSpicy()); 
-      modal.style.display = 'block';
+      // ✅ ลบ: updateSpicyUI(getSpicy());
+      modal.style.display = 'flex'; 
   } else {
       alert('กรุณาเลือกรายการสินค้าก่อนดูสรุปออเดอร์');
   }
@@ -329,10 +289,17 @@ closeModalBtns.forEach(btn => {
   });
 });
 
+// ให้ Modal ปิดเมื่อคลิกนอก Modal (ถ้าต้องการ)
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
 placeOrderBtn.addEventListener('click', placeOrder);
 
 // โหลดข้อมูลเริ่มต้นและอัพเดท UI
-const initialSpicyLevel = getSpicy();
-updateSpicyUI(initialSpicyLevel);
+// ✅ ลบ: const initialSpicyLevel = getSpicy();
+// ✅ ลบ: updateSpicyUI(initialSpicyLevel);
 updateUI();
 })();
