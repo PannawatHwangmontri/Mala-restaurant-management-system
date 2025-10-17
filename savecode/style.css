@@ -21,366 +21,444 @@
   --category-header-bg: #ffe4db; /* สีพื้นหลังส่วนหัวของหมวดหมู่ */
   --item-bg-color: #fff; /* สีพื้นหลังของรายการสินค้าแต่ละชิ้น */
   --item-border-radius: 12px; /* รัศมีขอบของ Item Card */
+  --mala-red: #c90000;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-    font-family: "Prompt", sans-serif; 
-    line-height: 1.6; 
-    background-color: var(--card);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 80px; /* เว้นที่ว่างให้ Order Bar */
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 120px; /* เว้นที่ว่างสำหรับ Order Bar */
 }
 
+/* ----------------------------------------
+   Header & Logo
+---------------------------------------- */
 .logo-container {
-    width: 100%;
-    text-align: center;
-    padding: 20px 0 10px;
-    background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
+  text-align: center;
+  padding: 20px 0 10px;
 }
-
 .site-logo {
-    max-width: 150px;
-    height: auto;
+  max-width: 150px;
+  height: auto;
 }
 
+/* ----------------------------------------
+   Main Content Layout
+---------------------------------------- */
 main {
-    width: 100%;
-    max-width: 900px;
-    padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .menu-box {
-    background-color: var(--menu-bg-color);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-soft);
-    padding: 20px;
+  background-color: var(--menu-bg-color);
+  padding: 30px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 .menu-title {
-    text-align: center;
-    color: var(--bg-bottom);
-    margin-bottom: 20px;
-    font-size: 2em;
+  text-align: center;
+  color: var(--mala-red);
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 2em;
 }
 
-.menu-panel {
-    border: 1px solid #ddd;
-    border-radius: var(--r-md);
-    padding: 15px;
-    background-color: #ffffff;
-}
-
-.category {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #f0f0f0;
-    border-radius: var(--r-md);
+.menu-category {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 .category-header {
-    background-color: var(--category-header-bg);
-    padding: 10px 15px;
-    border-radius: var(--r-md);
-    margin: -15px -15px 15px -15px; /* ลาก header เต็มความกว้าง */
-    border-bottom: 1px solid #f0f0f0;
+  background-color: var(--category-header-bg);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: var(--r-md);
+  margin-bottom: 15px;
 }
 
 .category h2 {
-    font-size: 1.5em;
-    color: var(--bg-bottom);
-    margin: 0;
+  font-size: 1.5em;
+  font-weight: 600;
 }
 
+
+/* ----------------------------------------
+   Item List
+---------------------------------------- */
 .item-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  list-style: none;
 }
 
 .item {
-    background-color: var(--item-bg-color);
-    border-radius: var(--item-border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow-card);
-    transition: transform 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  background-color: var(--item-bg-color);
+  border-radius: var(--item-border-radius);
+  box-shadow: var(--shadow-card);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
 }
 
 .item:hover {
-    transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .item-thumb {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-.info {
-    padding: 10px;
-    width: 100%;
+.item .info {
+  flex-grow: 1;
+  margin-bottom: 10px;
+}
+.item .name {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.item .price {
+  color: var(--mala-red);
+  font-weight: 700;
 }
 
-.item-name {
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: var(--text);
+/* Item Controls (Quantity) */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: auto;
 }
 
-.item-price {
-    color: var(--bg-bottom);
-    font-size: 0.9em;
-    margin-bottom: 10px;
+.btn {
+  background-color: var(--mala-red);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 1.2em;
+  line-height: 1;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
-.actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+.btn:hover {
+  background-color: #a30000;
 }
 
-.btn-qty {
-    background-color: var(--orange-2);
-    color: white;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: background-color 0.1s;
-    /* เพิ่ม: กำหนด z-index เพื่อความชัวร์ในการคลิกใน Modal */
-    z-index: 20; 
-    position: relative;
+.btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
-.btn-qty:hover:not(:disabled) {
-    background-color: var(--orange);
+.qty-input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 0;
+  font-size: 1em;
+  flex-shrink: 0;
+  background-color: #f7f7f7;
 }
 
-.btn-qty:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+/* Status: Selected Item */
+.item--selected {
+  border: 3px solid var(--orange);
+  background-color: var(--inner-card);
+  box-shadow: var(--ring);
 }
 
-.qty {
-    display: inline-block;
-    width: 30px;
-    text-align: center;
-    font-weight: 600;
-}
 
-/* ================== ORDER BAR =================== */
+/* ----------------------------------------
+   Order Bar (Bottom Summary)
+---------------------------------------- */
 .order-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 500;
-    background-color: var(--bg-top);
-    padding: 10px 20px;
-    text-align: center;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--mala-red);
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(100%); /* ซ่อนไว้ตอนเริ่มต้น */
+  transition: transform 0.3s ease-out;
 }
 
-.btn-summary {
-    background-color: var(--orange);
-    color: white;
-    border: none;
-    padding: 12px 30px;
+.order-bar--active {
+  transform: translateY(0); /* แสดงเมื่อมีสินค้าในตะกร้า */
+}
+
+.order-bar .summary-info {
+  display: flex;
+  gap: 20px;
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+.order-bar .btn-primary {
+  background-color: var(--orange);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.order-bar .btn-primary:hover:not(:disabled) {
+  background-color: #ff6a00;
+}
+
+.order-bar .btn-primary:disabled {
+  background-color: #8d8d8d;
+}
+
+.selected-spicy-display {
+    font-weight: 400;
+}
+
+.spicy-chip {
+    display: inline-block;
+    padding: 2px 8px;
     border-radius: var(--r-pill);
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, opacity 0.2s;
-    width: 100%;
-    max-width: 400px;
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-left: 5px;
 }
-
-.btn-summary:hover:not(:disabled) {
-    background-color: #d8702c; /* Darker shade of orange */
-}
-
-.btn-summary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+.chip--mild { background-color: #8c8c8c; color: white; }
+.chip--medium { background-color: #ffb169; color: var(--text); }
+.chip--hot { background-color: #c90000; color: white; }
 
 
-/* =============== POPUP (MODAL) STYLES =============== */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    /* ซ่อน Modal ไว้ตั้งแต่แรก */
-    display: none; 
-    z-index: 1000;
-    overflow-y: auto; 
-    /* จัดการให้ Modal อยู่ตรงกลางเมื่อแสดง */
-    justify-content: center;
-    align-items: center;
-}
-
-/* 🛠️ FIX: ใช้ selector ให้ตรงกับ script.js */
-.popup-overlay.popup--active { 
-    display: flex; 
+/* ----------------------------------------
+   Modal/Popup (Summary)
+---------------------------------------- */
+.popup-modal {
+  /* ✅ แก้ไข: ทำให้ Modal แสดงเต็มหน้าจอและอยู่ตรงกลาง */
+  display: none; /* ควบคุมการแสดงผลด้วย JS */
+  position: fixed;
+  z-index: 1000; /* ให้อยู่ด้านบนสุด */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6); /* ฉากหลังทึบ */
+  
+  /* จัดให้อยู่ตรงกลางจอ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .popup {
-    background: white;
-    padding: 30px;
-    border-radius: var(--r-lg);
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-    width: 100%;
-    max-width: 600px;
-    margin: 20px;
-    max-height: 90vh; /* จำกัดความสูงของ Modal */
-    overflow-y: auto; /* อนุญาตให้ Modal Scroll ได้ถ้าเนื้อหายาว */
+  /* ✅ แก้ไข: Modal Card */
+  background-color: white;
+  margin: 0; /* ลบ margin เดิมที่ทำให้ไม่ตรงกลาง */
+  padding: 30px;
+  border-radius: var(--r-lg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-width: 650px; /* จำกัดความกว้าง */
+  width: 90%;
+  position: relative;
+  max-height: 90vh; /* จำกัดความสูง */
+  display: flex;
+  flex-direction: column;
 }
 
 .popup__header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--bg-bottom);
-    padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
 }
 
 .popup__title {
-    color: var(--bg-bottom);
-    font-size: 1.8em;
-    text-align: center;
+  font-size: 1.8em;
+  color: var(--mala-red);
 }
 
-.popup__section { margin-bottom: 20px; }
-
-/* Summary Table Styles */
-.summary-table {
-    border: 1px solid #ddd;
-    border-radius: var(--r-md);
-    overflow: hidden;
-    margin-bottom: 15px;
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn-close:hover {
+  color: var(--text);
 }
 
-.tr {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    align-items: center;
-    padding: 10px 15px;
-    border-bottom: 1px solid #eee;
+.popup__content {
+  overflow-y: auto; /* ทำให้เนื้อหาสามารถ Scroll ได้ */
+  flex-grow: 1;
 }
-.tr:last-child { border-bottom: none; }
 
-.tr--head {
-    background-color: #f5f5f5;
-    font-weight: 600;
+.popup__section {
+  padding: 15px 0;
+  border-top: 1px dashed #ddd;
+}
+
+/* Summary Table */
+.table--summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.table--summary-head, .tr--summary-item {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1.5fr 1.5fr 1fr; /* รายการ, จำนวน, ราคา/ไม้, รวม, ลบ */
+  gap: 10px;
+  padding: 8px 0;
+  text-align: right;
+  align-items: center;
+}
+
+.table--summary-head {
+  background-color: #f0f0f0;
+  font-weight: 600;
+  border-radius: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.table--summary-head .th-menu {
+  text-align: left;
+}
+
+
+.tr--summary-item {
+  border-bottom: 1px dotted #eee;
+  font-size: 0.95em;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.tr--summary-item:last-child {
+  border-bottom: none;
+}
+.tr--summary-item .td-menu {
+  text-align: left;
+  font-weight: 500;
+}
+
+/* Remove Button in Modal */
+.btn-remove-item {
+    background-color: #ff8c8c;
     color: var(--text);
+    padding: 3px 8px;
+    border-radius: var(--r-md);
+    font-size: 0.8em;
+    font-weight: 600;
 }
-
-.tr--item {
-    background-color: #fff;
-}
-.tr--item:nth-child(odd) {
-    background-color: #fafafa;
-}
-
-.td-qty-action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    /* 🛠️ FIX: เพิ่ม position และ z-index เพื่อให้คลิกปุ่มได้แน่นอน */
-    position: relative; 
-    z-index: 10;
-}
-.td-price-value {
-    text-align: right;
-    font-weight: 500;
-}
-.td-name-value {
-    font-weight: 500;
-}
-
-.row-total {
-    color: var(--bg-bottom);
+.btn-remove-item:hover {
+    background-color: #ff6a6a;
 }
 
 
-/* Spicy Section Styles */
-.popup__section--spicy { margin-top: 15px; }
-.section-title { font-weight: 600; color: var(--text); margin-bottom: 10px; }
-.spicy-group { display:flex; gap:10px; }
+/* Spicy Level Selection */
+.popup__section--spicy {
+  border-top: 2px solid var(--mala-red);
+  margin-top: 15px;
+}
+.spicy-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
 
-.spicy-option input { display: none; }
-.spicy-option .chip { 
-    padding:5px 10px; 
-    border-radius:999px; 
-    border:1px solid #ccc;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+.spicy-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
-.spicy-option input:checked + .chip { 
-    border-color: var(--orange); 
-    box-shadow: var(--ring);
-}
-.chip--mild { background: #e0f2e3; }
-.chip--medium { background: #fff3e0; }
-.chip--hot { background: #ffe0e0; }
 
-.popup__footer { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+.spicy-option input[type="radio"] {
+  display: none;
 }
+
+.spicy-option .chip {
+  padding: 5px 15px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.spicy-option input[type="radio"]:checked + .chip {
+  /* เมื่อถูกเลือก */
+  border-color: var(--orange);
+  box-shadow: var(--ring);
+}
+.spicy-option input[value="mild"]:checked + .chip { background-color: #8c8c8c; color: white; }
+.spicy-option input[value="medium"]:checked + .chip { background-color: #ffb169; color: var(--text); }
+.spicy-option input[value="hot"]:checked + .chip { background-color: #c90000; color: white; }
+
+
+/* Footer Actions */
+.popup__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
 .footer-left {
-    font-weight: 600;
-    color: var(--bg-bottom);
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--mala-red);
 }
-.btn-primary {
-    background: var(--bg-bottom);
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: var(--r-pill);
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.btn-primary:hover:not(:disabled) { background: #5a0d13; }
 
-.btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.footer-right {
+  display: flex;
+  gap: 10px;
 }
 
 .btn-secondary {
-    background: #ccc;
-    color: var(--text);
-    border: none;
-    padding: 10px 25px;
-    border-radius: var(--r-pill);
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-right: 10px;
+  background-color: #aaa;
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
 }
-.btn-secondary:hover { background: #aaa; }
+.btn-secondary:hover {
+  background-color: #888;
+}
+
+/* Button Primary (Place Order) uses the same style as in Order Bar */
 
 
 /* Responsive */
@@ -396,26 +474,42 @@ main {
     }
     .popup__header { margin-bottom: 10px; }
     .popup__title { font-size: 1.5em; }
-    .tr {
-        padding: 8px 10px;
-        grid-template-columns: 3fr 2fr 1.5fr; /* ปรับคอลัมน์ในตารางสรุป */
-        font-size: 0.9em;
-    }
-    .popup__footer {
+    .order-bar {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
+        padding: 10px;
     }
-    .footer-right {
+    .summary-info {
         display: flex;
         justify-content: space-between;
+        width: 100%;
     }
-    .btn-primary, .btn-secondary {
-        flex-grow: 1;
-        text-align: center;
-        margin-right: 0;
+    .order-bar .btn-primary {
+        width: 100%;
+        padding: 8px 15px;
     }
-    .btn-secondary { margin-right: 5px; }
-    .btn-primary { margin-left: 5px; }
-    .btn-summary { font-size: 1em; }
+    .table--summary-head, .tr--summary-item {
+        grid-template-columns: 2fr 1.5fr 1fr 1fr; /* ซ่อนราคาต่อไม้, ลบรวมกับรายการ*/
+    }
+    .th-price, .td-price-per-unit {
+        display: none;
+    }
+    .td-menu {
+        text-align: left !important;
+    }
+    .footer-left {
+        font-size: 1em;
+        line-height: 1.4;
+    }
+    .footer-right {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+    .footer-right button {
+        width: 100%;
+    }
+    .spicy-group {
+        flex-wrap: wrap;
+    }
 }

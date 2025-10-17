@@ -22,58 +22,60 @@
         <section class="order-list-panel">
             <h2 class="section-title">รายการออเดอร์ที่รับมา</h2>
             
-            <div class="table table--head table--list-head">
-                <div class="th th-id">ID</div>
-                <div class="th th-datetime">วันที่/เวลา</div>
-                <div class="th th-total">รวม</div>
-                <div class="th th-spicy">เผ็ด</div>
-                <div class="th th-status">สถานะ</div>
-                <div class="th th-action"></div>
-                <div class="th th-delete">ลบ</div>
-            </div>
-            
-            <div class="order-list-body" id="orderListBody">
-                <p id="noOrdersMessage" style="text-align: center; padding: 20px; color: #555;" hidden>ไม่มีออเดอร์ที่ค้างอยู่</p>
+            <div class="nav-status-filter">
+                <button class="nav-btn-status nav-btn-status--all active" data-status="all">ทั้งหมด (<span class="status-count">0</span>)</button>
+                <button class="nav-btn-status nav-btn-status--pending" data-status="pending">รอรับ (<span class="status-count">0</span>)</button>
+                <button class="nav-btn-status nav-btn-status--confirmed" data-status="confirmed">กำลังทำ (<span class="status-count">0</span>)</button>
+                <button class="nav-btn-status nav-btn-status--completed" data-status="completed">เสร็จสิ้น (<span class="status-count">0</span>)</button>
+                <button class="nav-btn-status nav-btn-status--cancelled" data-status="cancelled">ยกเลิก (<span class="status-count">0</span>)</button>
             </div>
 
-            <template id="orderListRowTemplate">
-                <div class="tr order-row" role="button" tabindex="0">
-                    <div class="td td-id"></div>
-                    <div class="td td-datetime"></div>
-                    <div class="td td-total"></div>
-                    <div class="td td-spicy"></div>
-                    <div class="td td-status"></div>
-                    <div class="td td-action">
-                        <button class="btn btn--view-detail">ดูรายละเอียด</button>
-                    </div>
-                    <div class="td td-delete">
-                        <button class="btn-delete-order" aria-label="ลบออเดอร์">❌</button>
-                    </div> 
+            <div class="order-table table--list">
+                <div class="table--list-head tr">
+                    <div class="th th-id">ID</div>
+                    <div class="th th-datetime">เวลา</div>
+                    <div class="th th-qty">ไม้</div>
+                    <div class="th th-spicy">เผ็ด</div>
+                    <div class="th th-total">รวม</div>
+                    <div class="th th-status">สถานะ</div>
                 </div>
-            </template>
+                <div class="table--list-body" id="orderListBody">
+                    </div>
+                <template id="orderListRowTemplate">
+                    <div class="tr order-row" data-id="[ID]" data-status="[STATUS]">
+                        <div class="td td-id"></div>
+                        <div class="td td-datetime"></div>
+                        <div class="td td-qty"></div>
+                        <div class="td td-spicy"></div>
+                        <div class="td td-total"></div>
+                        <div class="td td-status"></div>
+                    </div>
+                </template>
+            </div>
         </section>
 
-        <section class="order-detail-panel" id="orderDetailPanel" aria-labelledby="orderIdTitle" hidden> 
+        <section class="order-detail-panel order-detail-panel--placeholder" id="orderDetailPanel">
+            <div class="panel-placeholder">
+                <p>⚠️ กรุณาเลือกออเดอร์จากตารางด้านซ้าย</p>
+            </div>
             
-            <header class="order-panel-header">
-                <h2 id="orderIdTitle" class="order-id-title">ออเดอร์ที่...</h2>
+            <header class="detail-header">
+                <h3 class="order-id-title">ออเดอร์ #<span id="orderIdTitle">0000</span></h3>
                 <div class="order-meta">
-                    <p class="order-meta-date">วันที่</p>
-                    <p class="order-meta-time">เวลา</p>
+                    <span class="order-meta-date">วันที่ 00/00/0000</span> | 
+                    <span class="order-meta-time">เวลา 00:00</span>
                 </div>
             </header>
 
-            <div class="order-items-table">
-                <div class="table table--head table--detail-head"> 
-                    <div class="th th-menu-detail">เมนู</div>
+            <div class="order-table table--detail">
+                <div class="table--detail-head tr tr--item-detail">
+                    <div class="th th-menu-detail">รายการ</div>
                     <div class="th th-qty-detail">จำนวน</div>
-                    <div class="th th-price-detail">ราคาต่อหน่วย</div>
+                    <div class="th th-price-detail">ราคา/ไม้</div>
                     <div class="th th-total-detail">รวม</div>
                 </div>
-                
-                <div class="table table--body order-items-body" id="orderItemsBody">
-                </div>
-                
+                <div class="table--detail-body" id="orderItemsBody">
+                    </div>
                 <template id="orderRowTemplate">
                     <div class="tr tr--item-detail"> 
                         <div class="td td-menu-detail"></div>
@@ -101,7 +103,8 @@
                 <div class="action-buttons">
                     <button class="btn btn--cancel" disabled>ยกเลิก</button>
                     <button class="btn btn--confirm" disabled>รับออเดอร์</button>
-                    <button class="btn btn--complete" disabled>เสร็จสิ้น</button> </div>
+                    <button class="btn btn--complete" disabled>เสร็จสิ้น</button> 
+                </div>
             </footer>
         </section>
 

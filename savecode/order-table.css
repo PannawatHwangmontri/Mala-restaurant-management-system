@@ -16,279 +16,308 @@
   --shadow-soft: 0 10px 30px rgba(0,0,0,.12);
   --mala-red: #c90000; 
   --table-detail-head-bg: #e0e0e0; /* สีพื้นหลังหัวตารางรายละเอียด */
+  --text-dark: #333;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
-    font-family: "Prompt", sans-serif; 
-    background: linear-gradient(180deg,var(--bg-top),var(--bg-bottom)) fixed; 
-    color: #222; 
-    line-height: 1.5; 
+    font-family: 'Prompt', sans-serif; 
+    line-height: 1.6;
+    background: linear-gradient(to bottom, var(--bg-top) 0%, var(--bg-bottom) 100%);
     min-height: 100vh;
+    color: var(--text-dark);
 }
-.site-logo { height: 50px; }
-.logo-container { padding: 10px 20px; }
 
-/* Grid Layout สำหรับหน้าจอหลัก */
+.logo-container {
+    text-align: center;
+    padding: 20px 0;
+}
+.site-logo {
+    width: 150px;
+    height: auto;
+    border-radius: var(--r-md);
+}
+
+/* Management Layout */
 .management-container {
-    padding: 20px;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--panel-bg);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
     display: grid;
-    grid-template-columns: minmax(300px, 2fr) 1fr; /* รายการ 2 ส่วน, รายละเอียด 1 ส่วน */
+    grid-template-columns: 2fr 1fr; /* ตารางรายการ 2 ส่วน, รายละเอียด 1 ส่วน */
+    grid-template-rows: auto 1fr;
     gap: 20px;
     grid-template-areas: 
         "nav nav"
         "list detail";
+    min-height: 80vh;
 }
+
+/* Admin Nav */
 .admin-nav {
     grid-area: nav;
-    margin-bottom: 0; 
     display: flex;
-    background: var(--header-bg);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-soft);
+    background-color: var(--header-bg);
+    border-radius: var(--r-md);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
 }
 .nav-btn {
     text-decoration: none;
     color: var(--header-text);
-    padding: 15px 25px;
-    font-weight: 600;
-    transition: background 0.2s;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 1.1em;
+    border-radius: var(--r-md);
+    transition: background-color 0.2s;
 }
+.nav-btn:hover { background-color: rgba(255,255,255,0.1); }
 .nav-btn--active {
-    background: #a80000; 
-    border-radius: var(--r-lg);
-}
-
-.section-title {
-    font-size: 1.5rem;
+    background-color: rgba(0,0,0,0.2);
     font-weight: 700;
-    color: var(--mala-red);
-    margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid var(--mala-red);
 }
 
-
-/* ==================================== */
-/* สไตล์สำหรับ ORDER LIST PANEL (ซ้าย) */
-/* ==================================== */
+/* Order List Panel */
 .order-list-panel {
     grid-area: list;
-    background: var(--panel-bg);
-    padding: 20px;
-    border-radius: var(--r-lg);
+    background-color: #ffffff;
+    border-radius: var(--r-md);
+    padding: 15px;
     box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
 }
-.table--list-head, .order-row {
-    display: flex; 
-}
-.table--list-head {
-    background: var(--table-head-bg);
-    border-radius: var(--r-md) var(--r-md) 0 0;
-    padding: 10px 5px;
-    border-bottom: 1px solid #ccc;
-    font-size: 0.9rem;
-}
-.order-list-body {
-    max-height: 80vh; 
-    overflow-y: auto; 
-}
-.order-row {
-    cursor: pointer;
-    background: var(--table-row-bg);
-    border-bottom: 1px solid #eee;
-    padding: 12px 5px;
-    transition: background 0.2s;
-    align-items: center; 
-}
-.order-row:hover {
-    background: #f0e0e3;
-}
-.order-row.active {
-    background: #ffd6e0; 
-    font-weight: bold;
-    box-shadow: 0 0 5px rgba(201, 0, 0, 0.3);
+.section-title {
+    font-size: 1.5em;
+    color: var(--mala-red);
+    margin-bottom: 10px;
+    font-weight: 600;
 }
 
-/* กำหนดความกว้างคอลัมน์รายการออเดอร์ */
-.table--list-head .th, .order-row .td {
-    text-align: center;
-    flex-shrink: 0; 
+/* Status Filter */
+.nav-status-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
 }
-.table--list-head .th-id, .order-row .td-id { width: 8%; } 
-.table--list-head .th-datetime, .order-row .td-datetime { width: 22%; font-size: 0.85rem; } 
-.table--list-head .th-total, .order-row .td-total { width: 14%; font-weight: bold; color: var(--mala-red); } 
-.table--list-head .th-spicy, .order-row .td-spicy { width: 13%; } 
-.table--list-head .th-status, .order-row .td-status { width: 18%; } 
-.table--list-head .th-action, .order-row .td-action { width: 15%; } 
-.table--list-head .th-delete, .order-row .td-delete { width: 10%; } /* คอลัมน์สำหรับปุ่มลบ */
-
-/* Chip สำหรับสถานะ */
-.status-chip {
-    display: inline-block;
-    padding: 4px 10px;
+.nav-btn-status {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    color: var(--text-dark);
+    padding: 8px 15px;
     border-radius: var(--r-pill);
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-.status-chip--pending { background: #ff8a3d; } 
-.status-chip--confirmed { background: #358d3d; } 
-.status-chip--cancelled { background: #555555; } 
-.status-chip--completed { background: var(--btn-complete); } /* สถานะเสร็จสิ้นใหม่ */
-
-.spicy-chip--mild { background: #358d3d; } 
-.spicy-chip--medium { background: #ffb169; } 
-.spicy-chip--hot { background: #ff5555; } 
-
-.btn--view-detail {
-    background: #2a6496; 
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: var(--r-md);
     cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-/* สไตล์สำหรับปุ่มลบออเดอร์ในรายการ */
-.btn-delete-order {
-    background: none;
-    border: 1px solid #ff5555;
-    color: #ff5555;
-    padding: 3px 6px;
-    border-radius: var(--r-md);
-    cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.9em;
+    font-weight: 500;
     transition: all 0.2s;
 }
-.btn-delete-order:hover {
-    background: #ff5555;
-    color: white;
+.nav-btn-status:hover:not(.active) {
+    background: #e0e0e0;
 }
-.btn-delete-order:active {
-    background: #c90000;
+.nav-btn-status.active {
+    background: var(--mala-red);
+    color: var(--header-text);
+    border-color: var(--mala-red);
+    font-weight: 600;
 }
 
+/* List Table Structure */
+.table--list-head {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-head-bg);
+    padding: 10px;
+    font-weight: 700;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    border-bottom: 2px solid #ccc;
+}
+.order-list-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.th, .td {
+    text-align: center;
+    padding: 5px;
+}
+.order-row {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-row-bg);
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.1s, box-shadow 0.2s;
+}
+.order-row:hover {
+    background-color: #f7e9eb;
+    box-shadow: 0 0 5px rgba(201, 0, 0, 0.2);
+}
+.order-row.selected {
+    background-color: #fff0f5;
+    border-left: 5px solid var(--mala-red);
+    padding-left: 0;
+}
+.order-row.selected .td-id {
+    padding-left: calc(5px - 5px); /* ชดเชย border-left */
+}
 
-/* ==================================== */
-/* สไตล์สำหรับ ORDER DETAIL PANEL (ขวา) */
-/* ==================================== */
+/* Status Chips in List */
+.td-status span {
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+    font-size: 0.8em;
+    font-weight: 600;
+}
+.status-pending { background-color: #fff2cc; color: #b45f06; }
+.status-confirmed { background-color: #d9edf7; color: #31708f; }
+.status-completed { background-color: #dff0d8; color: #3c763d; }
+.status-cancelled { background-color: #f2dede; color: #a94442; }
+
+/* Order Detail Panel */
 .order-detail-panel {
     grid-area: detail;
-    background: var(--panel-bg);
-    padding: 20px;
-    border-radius: var(--r-lg);
+    background-color: #ffffff;
+    border-radius: var(--r-md);
     box-shadow: var(--shadow-soft);
-    display: flex; 
-    flex-direction: column;
-    gap: 20px;
-}
-.order-panel-header {
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--mala-red);
-}
-.order-id-title {
-    font-size: 1.8rem;
-    color: var(--mala-red);
-    margin-bottom: 5px;
-}
-.order-meta {
+    padding: 15px;
     display: flex;
-    gap: 15px;
-    font-size: 0.9rem;
-    color: #555;
+    flex-direction: column;
+}
+/* Placeholder message when no order is selected */
+.order-detail-panel.empty:after {
+    content: "กรุณาเลือกออเดอร์จากรายการ";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 1.2em;
+    color: #aaa;
+    text-align: center;
+    padding: 50px;
+}
+.order-detail-panel.empty > :not(.detail-header) {
+    display: none;
 }
 
-/* ตารางรายละเอียดสินค้า */
-.order-items-table {
-    flex-grow: 1; 
-    overflow-y: auto; 
-    padding-right: 5px; 
-}
-.table--detail-head {
-    background: var(--table-detail-head-bg); 
-    color: #333;
-    padding: 10px 10px;
-    border-radius: var(--r-md);
-    font-size: 0.9rem;
+
+/* Detail Header */
+.detail-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
     display: flex;
-}
-.order-items-body {
-    padding: 10px 0;
-}
-.tr--item-detail {
-    display: flex;
-    padding: 8px 10px;
-    border-bottom: 1px dashed #ddd; 
+    justify-content: space-between;
     align-items: center;
 }
-.tr--item-detail:last-child {
-    border-bottom: none;
+.detail-id {
+    font-size: 1.5em;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+.order-meta {
+    font-size: 0.9em;
+    color: #666;
+}
+.order-meta-time {
+    margin-left: 5px;
+    font-weight: 500;
 }
 
-/* กำหนดความกว้างคอลัมน์ในตารางรายละเอียด (4 คอลัมน์) */
-.th-menu-detail, .td-menu-detail { width: 45%; text-align: left; font-weight: 500; } 
-.th-qty-detail, .td-qty-detail { width: 15%; text-align: center; } 
-.th-price-detail, .td-price-detail { width: 20%; text-align: right; font-size: 0.9rem; color: #555; } 
-.th-total-detail, .td-total-detail { width: 20%; text-align: right; font-weight: bold; color: var(--mala-red); } 
+/* Detail Body (Item List) */
+.detail-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.detail-body .section-title {
+    font-size: 1.1em;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
 
-/* ส่วนท้าย */
+/* Item Detail Table */
+.table--item-detail-head {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    background-color: var(--table-detail-head-bg);
+    padding: 8px 0;
+    font-weight: 600;
+    border-radius: 5px 5px 0 0;
+}
+
+.tr--item-detail {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    border-bottom: 1px dotted #ccc;
+    padding: 5px 0;
+}
+
+.td-menu-detail { text-align: left; padding-left: 5px; font-weight: 500; }
+.td-qty-detail, .td-price-detail, .td-total-detail { font-weight: 600; }
+.td-price-detail { font-size: 0.9em; color: #888; }
+
+
+/* Footer and Summary */
 .order-panel-footer {
-    padding-top: 20px;
-    border-top: 1px solid #ccc;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
 }
+
 .footer-summary-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    padding: 5px 0;
 }
-.spicy-level-box {
-    text-align: center;
-}
-.spicy-chip {
-    padding: 5px 15px;
-    border-radius: 999px;
-    color: white;
-    font-weight: 700;
-    display: inline-block;
-    margin-top: 5px;
-}
-.totals-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
-    font-size: 1rem;
+
+.spicy-level-box p {
     font-weight: 500;
+    margin-bottom: 5px;
 }
-.total-qty-pill, .total-price-pill {
-    background: #fff;
+
+.spicy-chip {
     padding: 5px 10px;
     border-radius: var(--r-pill);
     font-weight: 700;
-    color: var(--mala-red);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 0.9em;
+}
+.spicy-chip--mild { background-color: #e6f7d9; color: #38761d; }
+.spicy-chip--medium { background-color: #fff2cc; color: #b45f06; }
+.spicy-chip--hot { background-color: #fce5cd; color: #990000; }
+
+.totals-box {
+    text-align: right;
+    font-size: 1.1em;
+    font-weight: 600;
 }
 
+.total-qty-pill, .total-price-pill {
+    background-color: #f7e1e6;
+    color: var(--mala-red);
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+}
+
+
+/* Action Buttons */
 .action-buttons {
     display: flex;
+    gap: 10px;
     justify-content: flex-end;
-    gap: 15px;
 }
 .btn {
-    padding: 10px 25px;
     border: none;
+    padding: 10px 20px;
     border-radius: var(--r-pill);
-    color: white;
-    font-size: 1rem;
-    font-weight: bold;
+    color: var(--header-text);
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: opacity 0.2s, background-color 0.2s;
+    font-size: 1em;
 }
 .btn--cancel {
     background: var(--btn-cancel);
@@ -313,26 +342,41 @@ body {
             "list"
             "detail";
     }
-    .table--list-head .th-spicy, .order-row .td-spicy { display: none; } 
+    .table--list-head .th-spicy, .order-row .td-spicy { display: none; } /* ซ่อนคอลัมน์เผ็ดในตารางรายการ */
+    
+    /* ปรับคอลัมน์ตารางรายการ (สำหรับมือถือ 5 คอลัมน์) */
+    .table--list-head, .order-row {
+        grid-template-columns: 1fr 2fr 1fr 1.5fr 1.5fr; 
+    }
+    .table--list-head .th-id, .order-row .td-id { width: auto; } 
+    .table--list-head .th-datetime, .order-row .td-datetime { width: auto; } 
+    .table--list-head .th-total, .order-row .td-total { width: auto; } 
+    .table--list-head .th-status, .order-row .td-status { width: auto; } 
+    .table--list-head .th-qty, .order-row .td-qty { width: auto; } 
+
     .footer-summary-row {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         gap: 15px;
     }
     .action-buttons {
         justify-content: center;
     }
-    /* ปรับคอลัมน์ตารางรายการ (สำหรับมือถือ 6 คอลัมน์) */
-    .table--list-head .th-id, .order-row .td-id { width: 10%; } 
-    .table--list-head .th-datetime, .order-row .td-datetime { width: 30%; } 
-    .table--list-head .th-total, .order-row .td-total { width: 20%; } 
-    .table--list-head .th-status, .order-row .td-status { width: 20%; } 
-    .table--list-head .th-action, .order-row .td-action { width: 20%; display: none; } 
-    .table--list-head .th-delete, .order-row .td-delete { width: 20%; } 
-    
-    /* ปรับให้คอลัมน์ตารางละเอียดสำหรับมือถือ (4 คอลัมน์) */
-    .th-menu-detail, .td-menu-detail { width: 40%; } 
-    .th-qty-detail, .td-qty-detail { width: 20%; } 
-    .th-price-detail, .td-price-detail { width: 20%; } 
-    .th-total-detail, .td-total-detail { width: 20%; } 
+}
+
+@media (max-width: 480px) {
+    .nav-status-filter {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+    }
+    .nav-btn-status {
+        font-size: 0.8em;
+        text-align: center;
+        padding: 6px 10px;
+    }
+    .table--list-head .th-qty, .order-row .td-qty { display: none; } /* ซ่อนจำนวนไม้รวมสำหรับจอเล็กมากๆ */
+    .table--list-head, .order-row {
+        grid-template-columns: 1fr 2fr 1.5fr 1.5fr; /* 4 คอลัมน์ที่เหลือ */
+    }
 }

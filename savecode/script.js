@@ -1,8 +1,11 @@
-// script.js
+// script.js - โค้ดที่แก้ไขและสมบูรณ์
 (() => {
-  const API_ENDPOINT = 'http://localhost:3000/api/orders';
+  // Local Storage Keys
   const STORAGE_KEY = 'mala_cart_v1';
   const STORAGE_SPICY = 'mala_spicy_v1';
+  const ORDERS_STORAGE_KEY = 'mala_all_orders_v1';
+  const LAST_ORDER_ID_KEY = 'mala_last_order_id';
+
 
   // ดึง Element ที่ต้องใช้งาน (Elements to be used)
   const orderBar = document.getElementById('orderBar');
@@ -17,318 +20,319 @@
   const rowTemplate = document.getElementById('summaryRowTemplate');
   const closeModalBtns = modal.querySelectorAll('[data-close="true"]');
   const placeOrderBtn = document.getElementById('placeOrder');
+  const spicyDisplayChip = document.querySelector('.selected-spicy-display .spicy-chip');
+
 
   const spicyInputs = Array.from(document.querySelectorAll('input[name="spicy"]'));
   const itemNodes = Array.from(document.querySelectorAll('.item'));
-  const itemUI = new Map();
 
-  let cart = loadCart();
+  // เตรียมข้อมูลรายการสินค้า (Item Data Structure)
+  const itemData = itemNodes.map(node => ({
+    id: node.dataset.id,
+    name: node.dataset.name,
+    price: parseInt(node.dataset.price),
+  }));
 
-  // Initialize item UIs and add listeners for item cards
-  itemNodes.forEach(node => {
-    const id = node.dataset.id;
-    const itemInfo = {
-      id: id,
-      name: node.dataset.name,
-      price: parseInt(node.dataset.price)
+  // สร้าง UI object สำหรับการอ้างอิงง่าย (Item UI Map)
+  const itemUI = itemNodes.map(node => {
+    const item = itemData.find(i => i.id === node.dataset.id);
+    return {
+      ...item,
+      // ✅ การเชื่อมต่อกับปุ่ม + / - ที่ใช้ class ใหม่ใน main.html
+      qtyInput: node.querySelector('.qty-input'),
+      minusBtn: node.querySelector('.btn-minus'),
+      plusBtn: node.querySelector('.btn-plus'),
+      node: node, // เก็บ Node ไว้ในกรณีที่ต้องการใช้
     };
-    
-    // Store UI elements for quick update
-    const uiData = {
-      node,
-      itemInfo,
-      qtyEl: node.querySelector('.qty'),
-      minusBtn: node.querySelector('.btn-qty.minus'),
-      plusBtn: node.querySelector('.btn-qty.plus')
-    };
-    itemUI.set(id, uiData);
-
-    // Add event listeners to menu quantity buttons
-    uiData.plusBtn.addEventListener('click', () => handleQtyChange(id, 1));
-    uiData.minusBtn.addEventListener('click', () => handleQtyChange(id, -1));
-
-    // Initial UI update for menu card
-    updateItemUI(id);
   });
 
-  // -------------------------
-  // Cart Management Functions
-  // -------------------------
+  // ตะกร้าสินค้า (Cart State)
+  let cart = loadCart();
+
+  // ----------------------------------------
+  // Local Storage Helpers
+  // ----------------------------------------
 
   function loadCart() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    } catch {
-      return {};
+      const savedCart = localStorage.getItem(STORAGE_KEY);
+      const map = new Map(savedCart ? JSON.parse(savedCart) : []);
+      if (map.size > 0) {
+        orderBar.classList.add('order-bar--active');
+      } else {
+        orderBar.classList.remove('order-bar--active');
+      }
+      return map;
+    } catch (e) {
+      console.error("Error loading cart from localStorage", e);
+      return new Map();
     }
   }
 
   function saveCart() {
     try {
-      const nonZeroItems = Object.fromEntries(
-        Object.entries(cart).filter(([, item]) => item.qty > 0)
-      );
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nonZeroItems));
-      cart = nonZeroItems; // Update cart reference to clean version
-    } catch {}
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(cart.entries())));
+    } catch (e) {
+      console.error("Error saving cart to localStorage", e);
+    }
   }
 
-  const handleQtyChange = (id, change) => {
-    const uiData = itemUI.get(id);
-    if (!uiData) return;
-
-    // Initialize item in cart if it doesn't exist
-    if (!cart[id]) {
-      cart[id] = { qty: 0, price: uiData.itemInfo.price, name: uiData.itemInfo.name };
-    }
-
-    // Calculate new quantity
-    const newQty = cart[id].qty + change;
-
-    if (newQty < 0) return; // Prevent negative quantity
-
-    cart[id].qty = newQty;
-
+  function clearCart() {
+    cart.clear();
     saveCart();
-    updateItemUI(id);
-    updateCartUI();
-    
-    // If modal is open, re-render it
-    if (modal.classList.contains('popup--active')) {
-      renderSummary();
-    }
-  };
-
-
-  // -------------------------
-  // UI Update Functions
-  // -------------------------
-
-  function updateItemUI(id) {
-    const item = cart[id];
-    const uiData = itemUI.get(id);
-    const qty = item ? item.qty : 0;
-    
-    // Update quantity displayed on the menu card
-    if (uiData.qtyEl) {
-        uiData.qtyEl.textContent = qty;
-    }
-    
-    // Visually disable minus button if qty is 0
-    if (uiData.minusBtn) {
-        uiData.minusBtn.disabled = qty === 0;
-    }
-  }
-
-  function updateCartUI() {
-    let totalQty = 0;
-    let totalPrice = 0;
-
-    for (const id in cart) {
-      if (cart.hasOwnProperty(id)) {
-        const item = cart[id];
-        totalQty += item.qty;
-        totalPrice += item.qty * item.price;
-      }
-    }
-
-    // Update Order Bar UI
-    orderCountEl.textContent = totalQty;
-    orderTotalEl.textContent = totalPrice;
-    
-    // Enable/Disable summary button
-    const hasItems = totalQty > 0;
-    openSummaryBtn.disabled = !hasItems;
-    placeOrderBtn.disabled = !hasItems; // Also update Place Order button in modal
-  }
-
-  function renderSummary() {
-    summaryList.innerHTML = ''; // Clear existing list
-    let modalTotalQty = 0;
-    let modalTotalPrice = 0;
-
-    for (const [id, item] of Object.entries(cart)) {
-      if (item.qty <= 0) continue;
-
-      const row = rowTemplate.content.cloneNode(true).firstElementChild;
-      
-      const itemTotal = item.qty * item.price;
-      modalTotalQty += item.qty;
-      modalTotalPrice += itemTotal;
-
-      // Populate data
-      row.dataset.id = id; // Add data-id for easy lookup
-      row.querySelector('.td-name-value').textContent = `${item.name} (${item.price} บาท/ไม้)`;
-      row.querySelector('.qty').textContent = item.qty;
-      row.querySelector('.row-total').textContent = itemTotal;
-
-      // 🛠️ FIX: Attach event listeners to buttons in the modal row
-      const minusBtn = row.querySelector('.btn-qty.minus');
-      const plusBtn = row.querySelector('.btn-qty.plus');
-      
-      minusBtn.disabled = item.qty === 0;
-
-      minusBtn.addEventListener('click', () => handleQtyChange(id, -1));
-      plusBtn.addEventListener('click', () => handleQtyChange(id, 1));
-      
-      summaryList.appendChild(row);
-    }
-
-    // Update Modal Totals
-    modalCountEl.textContent = modalTotalQty;
-    modalTotalEl.textContent = modalTotalPrice;
-    
-    // Update Place Order button state
-    placeOrderBtn.disabled = modalTotalQty === 0; 
-    
-    // If cart becomes empty while modal is open, close it (optional, but good UX)
-    if (modalTotalQty === 0) {
-        closeModal();
-    }
-  }
-  
-  function closeModal() {
-    modal.classList.remove('popup--active');
-  }
-
-  // -------------------------
-  // Spicy Level Logic
-  // -------------------------
-  function initSpicy() {
-    const saved = getSpicyFromStorage();
-    if (!saved) return;
-    const match = spicyInputs.find(i => i.value === saved);
-    // Ensure only one is checked, prioritize saved value, otherwise default to "mild"
-    spicyInputs.forEach(i => i.checked = false); 
-    if (match) {
-        match.checked = true;
-    } else {
-        document.querySelector('input[name="spicy"][value="mild"]').checked = true;
-    }
-  }
-
-  function saveSpicy(val) {
-    try {
-      localStorage.setItem(STORAGE_SPICY, val);
-    } catch {}
+    updateUI();
   }
 
   function getSpicy() {
-    // Get current selection from radio buttons
-    const selectedInput = spicyInputs.find(i => i.checked);
-    return selectedInput ? selectedInput.value : getSpicyFromStorage() || 'mild';
+    return localStorage.getItem(STORAGE_SPICY) || 'mild';
   }
 
-  function getSpicyFromStorage() {
-    try {
-      return localStorage.getItem(STORAGE_SPICY);
-    } catch {
-      return 'mild';
-    }
+  function saveSpicy(level) {
+    localStorage.setItem(STORAGE_SPICY, level);
   }
 
-  function spicyLabel(val) {
-    if (val === 'mild') return 'น้อย';
-    if (val === 'medium') return 'ปานกลาง';
-    if (val === 'hot') return 'มาก';
-    return 'ไม่ระบุ';
+  // ฟังก์ชัน: สร้าง Order ID ใหม่
+  function getNextOrderId() {
+    let lastId = parseInt(localStorage.getItem(LAST_ORDER_ID_KEY) || '0');
+    lastId += 1;
+    localStorage.setItem(LAST_ORDER_ID_KEY, lastId.toString());
+    return lastId;
   }
-
-  // -------------------------
-  // Event Listeners
-  // -------------------------
-
-  openSummaryBtn.addEventListener('click', () => {
-    renderSummary();
-    modal.classList.add('popup--active');
-  });
-
-  closeModalBtns.forEach(btn => {
-    btn.addEventListener('click', closeModal);
-  });
   
-  // Save spicy level whenever a radio button changes
-  spicyInputs.forEach(input => {
-    input.addEventListener('change', (e) => saveSpicy(e.target.value));
-  });
-
-  placeOrderBtn.addEventListener('click', async () => {
-    if (Object.keys(cart).length === 0) {
-        alert('กรุณาเลือกรายการสินค้าก่อนสั่งซื้อ');
-        return;
+  // ฟังก์ชัน: โหลดออเดอร์ทั้งหมด
+  function loadAllOrders() {
+    try {
+        const savedOrdersJSON = localStorage.getItem(ORDERS_STORAGE_KEY);
+        return savedOrdersJSON ? JSON.parse(savedOrdersJSON) : [];
+    } catch (e) {
+        console.error("Error loading all orders from localStorage", e);
+        return [];
     }
-    
-    const items = [];
-    let totalQty = 0;
+  }
+
+  // ฟังก์ชัน: บันทึกออเดอร์ใหม่ลง Local Storage
+  function saveOrderToLocalStorage(order) {
+    let allOrders = loadAllOrders(); // โหลดทั้งหมดที่มีอยู่
+    allOrders.push(order); // เพิ่มออเดอร์ใหม่
+    try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(allOrders)); // บันทึกกลับ
+    } catch (e) {
+        console.error("Error saving new order to localStorage", e);
+    }
+  }
+
+  // ----------------------------------------
+  // UI Updates
+  // ----------------------------------------
+
+  function updateItemQty(itemId, change) {
+    const item = itemData.find(i => i.id === itemId);
+    if (!item) return;
+
+    let currentQty = cart.get(itemId)?.qty || 0;
+    let newQty = currentQty + change;
+
+    if (newQty < 0) newQty = 0;
+
+    if (newQty === 0) {
+      cart.delete(itemId);
+    } else {
+      cart.set(itemId, { ...item, qty: newQty });
+    }
+
+    saveCart();
+    updateUI();
+  }
+
+  function updateUI() {
+    let totalCount = 0;
     let totalPrice = 0;
 
-    Object.entries(cart).forEach(([, item]) => {
-      totalQty += item.qty;
-      totalPrice += item.qty * item.price;
-      items.push({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        qty: item.qty
-      });
+    // 1. อัพเดท Input และ Status ของแต่ละรายการ
+    itemUI.forEach(item => {
+      const cartItem = cart.get(item.id);
+      const qty = cartItem ? cartItem.qty : 0;
+      
+      item.qtyInput.value = qty;
+      item.node.classList.toggle('item--selected', qty > 0);
+
+      totalCount += qty;
+      totalPrice += qty * item.price;
     });
 
-    const order = {
-      items: items,
-      totalQty: totalQty,
-      totalPrice: totalPrice,
-      spicyLevel: getSpicy(), 
-      status: 'pending', 
-      orderDate: new Date().toISOString() 
+    // 2. อัพเดทแถบสรุปด้านล่าง (Order Bar)
+    orderCountEl.textContent = totalCount;
+    orderTotalEl.textContent = totalPrice.toLocaleString('th-TH');
+
+    // 3. ควบคุมการแสดงผล Order Bar
+    if (totalCount > 0) {
+      orderBar.classList.add('order-bar--active');
+      openSummaryBtn.disabled = false;
+    } else {
+      orderBar.classList.remove('order-bar--active');
+      openSummaryBtn.disabled = true;
+    }
+  }
+
+  function updateSpicyUI(level) {
+    const levelMap = {
+      'mild': { text: 'น้อย', class: 'chip--mild' },
+      'medium': { text: 'ปานกลาง', class: 'chip--medium' },
+      'hot': { text: 'มาก', class: 'chip--hot' },
     };
 
-    try {
-        placeOrderBtn.disabled = true;
-        placeOrderBtn.textContent = 'กำลังส่ง...';
+    const info = levelMap[level];
 
-        const response = await fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(order)
-        });
+    // อัพเดท Chip ที่แสดงในแถบด้านล่าง
+    spicyDisplayChip.textContent = info.text;
+    spicyDisplayChip.className = `spicy-chip ${info.class}`;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        // Success
-        alert(`🎉 สั่งซื้อสำเร็จ! ${order.totalQty} ไม้ ราคารวม ${order.totalPrice} บาท`);
-        
-        // 🛠️ FIX: Clear cart after successful order
-        cart = {}; 
-        saveCart();
-        
-        // Update all UIs
-        itemUI.forEach((_, id) => updateItemUI(id));
-        updateCartUI();
-        closeModal();
-
-    } catch (error) {
-        console.error('Error placing order:', error);
-        alert('❌ เกิดข้อผิดพลาดในการสั่งซื้อ กรุณาลองใหม่อีกครั้ง');
-    } finally {
-        placeOrderBtn.textContent = 'ยืนยันคำสั่งซื้อ';
-        updateCartUI(); // Re-enable if cart is not empty, otherwise remains disabled
+    // อัพเดท Radio Button ใน Modal
+    const radioBtn = document.querySelector(`input[name="spicy"][value="${level}"]`);
+    if(radioBtn) {
+      radioBtn.checked = true;
     }
-  });
-
-
-  // -------------------------
-  // Initialization
-  // -------------------------
-  function init() {
-      // Load saved spicy level on page load
-      initSpicy();
-      // Apply initial UI updates based on loaded cart
-      itemUI.forEach((_, id) => updateItemUI(id));
-      updateCartUI();
   }
-  
-  init();
 
+  function updateModalSummary() {
+    summaryList.innerHTML = ''; // Clear previous list
+
+    let totalCount = 0;
+    let totalPrice = 0;
+
+    Array.from(cart.values()).forEach(item => {
+      // ใช้ cloneNode(true) เพื่อให้ได้ Template ที่มี Event Listener ที่จะใส่ได้
+      const row = orderRowTemplate.content.cloneNode(true);
+      const total = item.qty * item.price;
+
+      row.querySelector('.td-menu').textContent = item.name;
+      row.querySelector('.td-qty').textContent = item.qty;
+      row.querySelector('.td-price-per-unit').textContent = item.price.toLocaleString('th-TH');
+      row.querySelector('.td-total-price').textContent = total.toLocaleString('th-TH');
+      
+      // เพิ่มปุ่มลบใน Modal Summary
+      const removeBtn = row.querySelector('.btn-remove-item');
+      if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+              // ลบรายการในตะกร้าทันที
+              cart.delete(item.id);
+              saveCart();
+              updateUI();
+              updateModalSummary(); // อัพเดท Modal ใหม่
+              if (cart.size === 0) {
+                  modal.style.display = 'none'; // ปิด Modal ถ้าตะกร้าว่าง
+              }
+          });
+      }
+
+      summaryList.appendChild(row);
+
+      totalCount += item.qty;
+      totalPrice += total;
+    });
+
+    modalCountEl.textContent = totalCount;
+    modalTotalEl.textContent = totalPrice.toLocaleString('th-TH');
+  }
+
+
+  // ----------------------------------------
+  // Core Logic: Cart Manipulation and Order Submission
+  // ----------------------------------------
+  
+  // ฟังก์ชัน: ส่งออเดอร์ (บันทึก Local Storage)
+  async function placeOrder() {
+    // ปิดปุ่มทันทีเพื่อป้องกันการส่งซ้ำ
+    placeOrderBtn.disabled = true;
+
+    if (cart.size === 0) {
+      alert('ตะกร้าว่างเปล่า! กรุณาเลือกรายการสินค้าก่อน');
+      placeOrderBtn.disabled = false;
+      return;
+    }
+
+    // เตรียมข้อมูลออเดอร์
+    const orderItems = Array.from(cart.values()).map(item => ({
+      name: item.name,
+      qty: item.qty,
+      price: item.price,
+      total: item.qty * item.price,
+      id: item.id
+    }));
+    
+    const totalCount = orderItems.reduce((acc, item) => acc + item.qty, 0);
+    const totalPrice = orderItems.reduce((acc, item) => acc + item.total, 0);
+
+    const newOrderId = getNextOrderId(); // ใช้งานฟังก์ชันสร้าง ID ใหม่
+
+    const orderData = {
+      id: newOrderId,
+      orderDate: new Date().toISOString(),
+      status: 'pending',
+      spicyLevel: getSpicy(),
+      items: orderItems,
+      totalCount: totalCount,
+      totalPrice: totalPrice,
+    };
+    
+    try {
+        saveOrderToLocalStorage(orderData); // บันทึกออเดอร์ใหม่ลง Local Storage
+        
+        // เมื่อส่งสำเร็จ:
+        clearCart();
+        modal.style.display = 'none';
+        
+        alert(`✅ ส่งออเดอร์สำเร็จ! หมายเลข: ${String(newOrderId).padStart(4, '0')}\nกรุณารอรับออเดอร์`);
+        
+    } catch (error) {
+      console.error('Error submitting order to Local Storage:', error);
+
+      alert('❌ ไม่สามารถส่งออเดอร์ได้: ปัญหาในการบันทึกข้อมูลลง Local Storage');
+      placeOrderBtn.disabled = false;
+    }
+  }
+
+  // ----------------------------------------
+  // Initialization
+  // ----------------------------------------
+
+  // Add event listeners
+ itemUI.forEach(item => {
+  // ✅ ใช้ event listener ที่ถูกต้องเพื่อเรียก updateItemQty
+  item.minusBtn.addEventListener('click', () => updateItemQty(item.id, -1));
+  item.plusBtn.addEventListener('click', () => updateItemQty(item.id, 1));
+});
+
+// Event Listener สำหรับปุ่มเผ็ดใน Modal
+spicyInputs.forEach(input => {
+    input.addEventListener('change', (e) => {
+        const newLevel = e.target.value;
+        saveSpicy(newLevel);
+        updateSpicyUI(newLevel);
+    });
+});
+
+openSummaryBtn.addEventListener('click', () => {
+  if (cart.size > 0) {
+      updateModalSummary();
+      // ดึงระดับความเผ็ดล่าสุดจาก Local Storage มาอัพเดท Radio Button
+      updateSpicyUI(getSpicy()); 
+      modal.style.display = 'block';
+  } else {
+      alert('กรุณาเลือกรายการสินค้าก่อนดูสรุปออเดอร์');
+  }
+});
+
+closeModalBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+});
+
+placeOrderBtn.addEventListener('click', placeOrder);
+
+// โหลดข้อมูลเริ่มต้นและอัพเดท UI
+const initialSpicyLevel = getSpicy();
+updateSpicyUI(initialSpicyLevel);
+updateUI();
 })();

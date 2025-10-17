@@ -1,5 +1,8 @@
+// order-table.js - แก้ไขเพื่อใช้ Local Storage ในการจัดการข้อมูลออเดอร์
 (() => {
-    const API_ENDPOINT = 'http://localhost:3000/api/orders'; 
+    // ⛔ ลบ const API_ENDPOINT = 'http://localhost:3000/api/orders'; 
+    // ✅ คีย์สำหรับเก็บออเดอร์ทั้งหมด
+    const ORDERS_STORAGE_KEY = 'mala_all_orders_v1';
     
     // ดึง Element ที่ต้องใช้งาน
     const orderDetailPanel = document.getElementById('orderDetailPanel');
@@ -18,249 +21,296 @@
     // Element สำหรับตารางรายการ
     const orderListBody = document.getElementById('orderListBody');
     const orderListRowTemplate = document.getElementById('orderListRowTemplate');
-    const noOrdersMessage = document.getElementById('noOrdersMessage');
+    const statusButtons = document.querySelectorAll('.nav-btn-status');
 
-    let allOrders = [];
+    let allOrders = []; // เก็บออเดอร์ทั้งหมดที่โหลดมาจาก Local Storage
     let currentOrder = null;
+    let currentFilterStatus = 'all';
 
-    async function loadOrders() {
+    // ----------------------------------------
+    // Local Storage Helpers
+    // ----------------------------------------
+
+    // ✅ ฟังก์ชันสำหรับโหลดออเดอร์ทั้งหมดจาก Local Storage
+    function loadAllOrdersFromStorage() {
         try {
-            const response = await fetch(API_ENDPOINT); 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch orders, status: ${response.status}`);
-            }
-            
-            const orders = await response.json();
-            
-            orders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date)); 
-            return orders; 
-        } catch (error) {
-            console.error('Error loading orders from API:', error);
-            noOrdersMessage.style.display = 'block';
-            noOrdersMessage.textContent = '❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้ หรือไม่มีออเดอร์';
+            const savedOrdersJSON = localStorage.getItem(ORDERS_STORAGE_KEY);
+            return savedOrdersJSON ? JSON.parse(savedOrdersJSON) : [];
+        } catch (e) {
+            console.error("Error loading all orders from localStorage", e);
             return [];
         }
     }
-    
-    function spicyLabel(val) {
-        if (val === 'mild') return 'น้อย';
-        if (val === 'medium') return 'ปานกลาง';
-        if (val === 'hot') return 'มาก';
-        return '';
-    }
-    
-    function spicyChipClass(val) {
-        if (val === 'mild') return 'spicy-chip--mild';
-        if (val === 'medium') return 'spicy-chip--medium';
-        if (val === 'hot') return 'spicy-chip--hot';
-        return '';
-    }
 
-    function statusChipClass(val) {
-        if (val === 'pending') return 'status-chip--pending';
-        if (val === 'confirmed') return 'status-chip--confirmed';
-        if (val === 'cancelled') return 'status-chip--cancelled';
-        if (val === 'completed') return 'status-chip--completed';
-        return '';
-    }
-    
-    function statusLabel(val) {
-        if (val === 'pending') return 'รอรับออเดอร์';
-        if (val === 'confirmed') return 'กำลังทำ';
-        if (val === 'cancelled') return 'ยกเลิกแล้ว';
-        if (val === 'completed') return 'เสร็จสิ้น';
-        return '';
-    }
-
-    function formatDateTime(isoString) {
-        const date = new Date(isoString);
-        if (isNaN(date.getTime())) {
-            return { date: 'N/A', time: 'N/A' };
+    // ✅ ฟังก์ชันสำหรับบันทึกออเดอร์ทั้งหมดกลับไปที่ Local Storage
+    function saveAllOrdersToStorage(orders) {
+        try {
+            localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+        } catch (e) {
+            console.error("Error saving all orders to localStorage", e);
         }
-        
-        const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-        
-        return {
-            date: date.toLocaleDateString('th-TH', dateOptions),
-            time: date.toLocaleTimeString('th-TH', timeOptions)
-        };
     }
+
+    // ----------------------------------------
+    // Order List Management
+    // ----------------------------------------
     
-    async function renderOrderList(selectId = null) {
-        allOrders = await loadOrders(); 
-        
-        orderListBody.innerHTML = '';
-        orderDetailPanel.classList.remove('is-active'); 
-        currentOrder = null;
-        
-        if (allOrders.length === 0) {
-            noOrdersMessage.style.display = 'block';
-            noOrdersMessage.textContent = '✅ ไม่มีรายการออเดอร์ที่รอการจัดการ';
-            updateActionButtons(null);
+    // ✅ แก้ไข: โหลดข้อมูลจาก Local Storage แทน API
+    function loadOrders() {
+        allOrders = loadAllOrdersFromStorage();
+        // จัดเรียงตาม ID/วันที่ จากมากไปน้อย (ออเดอร์ใหม่สุดอยู่บน)
+        allOrders.sort((a, b) => b.id - a.id); 
+        filterOrders(currentFilterStatus); // แสดงออเดอร์ที่ถูกกรองตามสถานะปัจจุบัน
+    }
+
+    function renderOrderList(orders) {
+        orderListBody.innerHTML = ''; // ล้างรายการเก่า
+        updateStatusCount(); // อัพเดทจำนวนในปุ่ม Filter
+
+        if (orders.length === 0) {
+            orderListBody.innerHTML = '<div class="no-orders">ไม่มีออเดอร์ในสถานะนี้</div>';
             return;
         }
 
-        noOrdersMessage.style.display = 'none';
-
-        let initialSelectId = selectId || allOrders.find(o => o.status === 'pending')?.id;
-        if (!initialSelectId && allOrders.length > 0) {
-            initialSelectId = allOrders[0].id;
-        }
-        
-        allOrders.forEach(order => {
-            const row = orderListRowTemplate.content.cloneNode(true);
-            const rowNode = row.querySelector('.order-row');
-            const { date, time } = formatDateTime(order.order_date);
-            const orderIdDisplay = order.order_id || order.id.toString().slice(-4);
+        orders.forEach(order => {
+            const row = orderListRowTemplate.content.querySelector('.order-row').cloneNode(true);
             
-            rowNode.dataset.id = order.id;
+            // สร้าง Element ใหม่แล้วกำหนด Attribute
+            row.dataset.id = order.id;
+            row.dataset.status = order.status;
             
-            row.querySelector('.td-id').textContent = orderIdDisplay;
-            row.querySelector('.td-datetime').textContent = `${date} ${time}`;
-            row.querySelector('.td-spicy').innerHTML = `<span class="spicy-chip ${spicyChipClass(order.spicy_level)}">${spicyLabel(order.spicy_level)}</span>`;
-            row.querySelector('.td-total').textContent = order.total_price.toLocaleString();
+            row.querySelector('.td-id').textContent = String(order.id).padStart(4, '0');
+            // แปลง ISO Date เป็นรูปแบบที่อ่านง่าย
+            const dateObj = new Date(order.orderDate);
+            row.querySelector('.td-datetime').textContent = dateObj.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+            row.querySelector('.td-qty').textContent = order.totalCount;
+            row.querySelector('.td-spicy').textContent = getSpicyText(order.spicyLevel);
+            row.querySelector('.td-total').textContent = order.totalPrice.toLocaleString('th-TH');
+            row.querySelector('.td-status').textContent = getStatusText(order.status);
+            row.querySelector('.td-status').className = `td td-status status--${order.status}`;
             
-            // สถานะ
-            const statusEl = row.querySelector('.td-status');
-            statusEl.innerHTML = `<span class="status-chip ${statusChipClass(order.status)}">${statusLabel(order.status)}</span>`;
-
-            // ปุ่มลบ
-            const deleteBtn = row.querySelector('.btn--delete');
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // หยุดการเลือกแถว
-                deleteOrder(order.id, orderIdDisplay);
+            // Event Listener สำหรับการคลิกเลือกออเดอร์
+            row.addEventListener('click', () => {
+                // ล้าง selection เดิม
+                document.querySelectorAll('.order-row--selected').forEach(r => r.classList.remove('order-row--selected'));
+                // เลือกแถวปัจจุบัน
+                row.classList.add('order-row--selected');
+                selectOrder(order);
             });
-            
-            // กำหนดสถานะที่ถูกเลือก
-            if (order.id === initialSelectId) {
-                rowNode.classList.add('active');
-                selectOrder(order.id);
-            }
-            
-            rowNode.addEventListener('click', () => {
-                // ยกเลิกการเลือกแถวเดิม
-                document.querySelectorAll('.order-row').forEach(r => r.classList.remove('active'));
-                rowNode.classList.add('active');
-                selectOrder(order.id);
-            });
-            
+
             orderListBody.appendChild(row);
         });
     }
 
-    function selectOrder(orderId) {
-        currentOrder = allOrders.find(o => o.id === orderId);
-        
-        if (currentOrder) {
-            renderOrderDetail(currentOrder);
-            orderDetailPanel.classList.add('is-active'); 
-        } else {
-            orderDetailPanel.classList.remove('is-active'); 
-        }
+    function filterOrders(status) {
+        currentFilterStatus = status;
+
+        // อัพเดท Active Button
+        document.querySelectorAll('.nav-btn-status').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.status === status) {
+                btn.classList.add('active');
+            }
+        });
+
+        const filteredOrders = status === 'all'
+            ? allOrders
+            : allOrders.filter(order => order.status === status);
+
+        renderOrderList(filteredOrders);
+    }
+    
+    // ✅ เพิ่ม: อัพเดทจำนวนในปุ่ม Filter
+    function updateStatusCount() {
+        const counts = { all: 0, pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
+
+        allOrders.forEach(order => {
+            counts.all++;
+            if (counts.hasOwnProperty(order.status)) {
+                counts[order.status]++;
+            }
+        });
+
+        statusButtons.forEach(btn => {
+            const status = btn.dataset.status;
+            // ดึง span ที่มี class status-count ภายในปุ่ม
+            const countSpan = btn.querySelector('.status-count');
+            if (countSpan) {
+                countSpan.textContent = counts[status] || 0;
+            }
+        });
     }
 
-    function renderOrderDetail(order) {
-        const { date, time } = formatDateTime(order.order_date);
-        const orderIdDisplay = order.order_id || order.id.toString().slice(-4);
 
-        orderIdTitle.textContent = `รายละเอียดออเดอร์ #${orderIdDisplay}`;
-        orderMetaDate.textContent = date;
-        orderMetaTime.textContent = time;
+    // ----------------------------------------
+    // Order Detail Management
+    // ----------------------------------------
 
-        // รายการสินค้า
+    function selectOrder(order) {
+        currentOrder = order;
+        orderDetailPanel.classList.remove('order-detail-panel--placeholder');
+        
+        // 1. Header
+        orderIdTitle.textContent = String(order.id).padStart(4, '0');
+        const dateObj = new Date(order.orderDate);
+        orderMetaDate.textContent = `วันที่ ${dateObj.toLocaleDateString('th-TH')}`;
+        orderMetaTime.textContent = `เวลา ${dateObj.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}`;
+
+        // 2. Items
         orderItemsBody.innerHTML = '';
         order.items.forEach(item => {
             const row = orderRowTemplate.content.cloneNode(true);
             row.querySelector('.td-menu-detail').textContent = item.name;
-            row.querySelector('.td-qty-detail').textContent = `${item.qty} ไม้`;
-            row.querySelector('.td-price-detail').textContent = `${item.price} บาท`;
-            row.querySelector('.td-total-detail').textContent = (item.qty * item.price).toLocaleString();
+            row.querySelector('.td-qty-detail').textContent = item.qty;
+            row.querySelector('.td-price-detail').textContent = item.price.toLocaleString('th-TH');
+            row.querySelector('.td-total-detail').textContent = item.total.toLocaleString('th-TH');
             orderItemsBody.appendChild(row);
         });
 
-        // สรุป
-        orderSpicyChip.textContent = spicyLabel(order.spicy_level);
-        orderSpicyChip.className = `spicy-chip ${spicyChipClass(order.spicy_level)}`;
-        orderTotalCount.textContent = order.total_qty;
-        orderTotalPrice.textContent = order.total_price.toLocaleString();
-        
-        updateActionButtons(order);
+        // 3. Footer
+        orderSpicyChip.textContent = getSpicyText(order.spicyLevel);
+        orderSpicyChip.className = `spicy-chip ${getSpicyClass(order.spicyLevel)}`;
+        orderTotalCount.textContent = order.totalCount;
+        orderTotalPrice.textContent = order.totalPrice.toLocaleString('th-TH');
+
+        // 4. Action Buttons (เปิด/ปิดตามสถานะปัจจุบัน)
+        updateActionButtons(order.status);
     }
     
-    function updateActionButtons(order) {
-        // ปิดปุ่มทั้งหมดก่อน
-        btnCancel.disabled = true;
-        btnConfirm.disabled = true;
-        btnComplete.disabled = true;
-
-        if (!order) return;
+    function clearOrderDetail() {
+        currentOrder = null;
+        orderDetailPanel.classList.add('order-detail-panel--placeholder');
+        orderItemsBody.innerHTML = ''; // ล้างรายละเอียดรายการ
         
-        // เปิดปุ่มตามสถานะปัจจุบัน
-        if (order.status === 'pending') {
-            btnCancel.disabled = false;
-            btnConfirm.disabled = false;
-        } else if (order.status === 'confirmed') {
-            btnCancel.disabled = false;
-            btnComplete.disabled = false;
-        } 
-        // ออเดอร์ที่ยกเลิกแล้ว ('cancelled') หรือเสร็จสิ้นแล้ว ('completed') ไม่ต้องเปิดปุ่มใดๆ
+        // ปิดปุ่มทั้งหมด
+        updateActionButtons('default');
+        
+        // ล้าง selection ในตารางรายการ
+        document.querySelectorAll('.order-row--selected').forEach(r => r.classList.remove('order-row--selected'));
     }
 
-    async function deleteOrder(orderId, orderIdDisplay) {
-        if (confirm(`คุณต้องการลบออเดอร์ที่ ${orderIdDisplay} อย่างถาวรใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
-            try {
-                const response = await fetch(`${API_ENDPOINT}/${orderId}`, {
-                    method: 'DELETE', 
-                });
+    function updateActionButtons(status) {
+        // รีเซ็ตทั้งหมด
+        [btnCancel, btnConfirm, btnComplete].forEach(btn => btn.disabled = true);
 
-                if (!response.ok) {
-                    throw new Error(`Failed to delete order, status: ${response.status}`);
-                }
-                
-                alert(`ออเดอร์ที่ ${orderIdDisplay} ถูกลบเรียบร้อย`);
-                renderOrderList();
-            } catch (error) {
-                console.error('Error deleting order:', error);
-                alert('❌ เกิดข้อผิดพลาดในการลบออเดอร์');
-                renderOrderList(currentOrder?.id);
-            }
+        switch (status) {
+            case 'pending': // รอรับ -> สามารถ ยกเลิก หรือ รับออเดอร์
+                btnCancel.disabled = false;
+                btnConfirm.disabled = false;
+                break;
+            case 'confirmed': // กำลังทำ -> สามารถ ยกเลิก หรือ เสร็จสิ้น
+                btnCancel.disabled = false;
+                btnComplete.disabled = false;
+                break;
+            case 'completed': // เสร็จสิ้น -> ทำอะไรไม่ได้
+            case 'cancelled': // ยกเลิก -> ทำอะไรไม่ได้
+            case 'default': // ไม่มีออเดอร์ถูกเลือก
+            default:
+                break;
         }
     }
 
-    async function handleActionButtonClick(newStatus, actionLabel) {
-        if (!currentOrder) return;
-        const orderId = currentOrder.order_id || currentOrder.id.toString().slice(-4);
-        
-        if (confirm(`คุณต้องการ${actionLabel}ออเดอร์ที่ ${orderId} ใช่หรือไม่?`)) {
-            try {
-                updateActionButtons(null); 
-                
-                const response = await fetch(`${API_ENDPOINT}/${currentOrder.id}/status`, {
-                    method: 'PATCH', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
 
-                if (!response.ok) {
-                    throw new Error(`Failed to update status, status: ${response.status}`);
-                }
-                
-                alert(`ออเดอร์ที่ ${orderId} ถูก${actionLabel}เรียบร้อย`);
-                
-                renderOrderList(); 
+    // ----------------------------------------
+    // Status and Spicy Helpers
+    // ----------------------------------------
+
+    function getSpicyText(level) {
+        const map = { mild: 'น้อย', medium: 'ปานกลาง', hot: 'มาก' };
+        return map[level] || 'ไม่ระบุ';
+    }
+
+    function getSpicyClass(level) {
+        return `chip--${level}`;
+    }
+
+    function getStatusText(status) {
+        const map = { 
+            pending: 'รอรับ', 
+            confirmed: 'กำลังทำ', 
+            completed: 'เสร็จสิ้น', 
+            cancelled: 'ยกเลิก' 
+        };
+        return map[status] || 'ไม่ระบุ';
+    }
+
+
+    // ----------------------------------------
+    // Action Handlers
+    // ----------------------------------------
+
+    // ✅ แก้ไข: อัพเดทสถานะใน Local Storage แทน API
+    function updateOrderStatus(orderId, newStatus) {
+        // 1. ค้นหาออเดอร์ใน AllOrders
+        const orderIndex = allOrders.findIndex(order => order.id === orderId);
+
+        if (orderIndex === -1) {
+            throw new Error(`Order ID ${orderId} not found`);
+        }
+        
+        // 2. อัพเดทสถานะใน Array
+        allOrders[orderIndex].status = newStatus;
+        
+        // 3. บันทึกกลับไปที่ Local Storage
+        saveAllOrdersToStorage(allOrders);
+
+        // 4. อัพเดท UI
+        // โหลดและกรองรายการใหม่ (เนื่องจากออเดอร์อาจหายไปจาก filter ปัจจุบัน)
+        filterOrders(currentFilterStatus); 
+        
+        // อัพเดทรายละเอียด (currentOrder อาจไม่อยู่ใน filter ปัจจุบันแล้ว)
+        const updatedOrder = allOrders.find(o => o.id === orderId);
+        if (updatedOrder) {
+            selectOrder(updatedOrder);
+        } else {
+            clearOrderDetail();
+        }
+    }
+
+    function handleActionButtonClick(newStatus, actionName) {
+        if (!currentOrder) {
+            alert('กรุณาเลือกออเดอร์ที่ต้องการดำเนินการ');
+            return;
+        }
+        
+        const orderId = currentOrder.id;
+        
+        if (confirm(`คุณต้องการ ${actionName} ออเดอร์ #${String(orderId).padStart(4, '0')} ใช่หรือไม่?`)) {
+            try {
+                // เรียกใช้ฟังก์ชัน Local Storage
+                updateOrderStatus(orderId, newStatus);
+                alert(`✅ ${actionName} ออเดอร์ #${String(orderId).padStart(4, '0')} เรียบร้อยแล้ว`);
 
             } catch (error) {
                 console.error('Error updating order status:', error);
-                alert('❌ เกิดข้อผิดพลาดในการอัปเดตสถานะ');
-                renderOrderList(currentOrder.id); 
+                
+                let message = error.message.includes('not found')
+                    ? 'ไม่พบออเดอร์ใน Local Storage'
+                    : error.message;
+
+                alert('❌ เกิดข้อผิดพลาดในการอัปเดตสถานะ: ' + message); 
+                loadOrders(); // โหลดใหม่เพื่อคืนสถานะเดิม
             }
         }
     }
 
+    // Event Listeners สำหรับปุ่ม Actions
     btnCancel.addEventListener('click', () => handleActionButtonClick('cancelled', 'ยกเลิก'));
     btnConfirm.addEventListener('click', () => handleActionButtonClick('confirmed', 'รับออเดอร์'));
     btnComplete.addEventListener('click', () => handleActionButtonClick('completed', 'เสร็จสิ้น'));
 
-    renderOrderList();
+    // Event Listeners สำหรับปุ่ม Filter สถานะ
+    document.querySelectorAll('.nav-btn-status').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // ดึง status จาก dataset ของปุ่มที่ถูกคลิก
+            filterOrders(e.currentTarget.dataset.status);
+            
+            // ล้างรายละเอียดออเดอร์ทุกครั้งที่เปลี่ยน Filter
+            clearOrderDetail();
+        });
+    });
+
+    // เริ่มโหลดข้อมูลเมื่อเปิดหน้า Order Table
+    loadOrders();
+    clearOrderDetail(); // แสดง Placeholder ตอนเริ่มต้น
 })();
