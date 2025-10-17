@@ -1,3 +1,4 @@
+/* style.css */
 :root {
   --bg-top: #1d1c20;
   --bg-bottom: #6e1017;
@@ -157,10 +158,18 @@ main {
     font-size: 1.2em;
     cursor: pointer;
     transition: background-color 0.1s;
+    /* เพิ่ม: กำหนด z-index เพื่อความชัวร์ในการคลิกใน Modal */
+    z-index: 20; 
+    position: relative;
 }
 
-.btn-qty:hover {
+.btn-qty:hover:not(:disabled) {
     background-color: var(--orange);
+}
+
+.btn-qty:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .qty {
@@ -215,7 +224,7 @@ main {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    /* 🚨 FIX: ซ่อน Modal ไว้ตั้งแต่แรก */
+    /* ซ่อน Modal ไว้ตั้งแต่แรก */
     display: none; 
     z-index: 1000;
     overflow-y: auto; 
@@ -224,8 +233,8 @@ main {
     align-items: center;
 }
 
-.popup-overlay.is-active {
-    /* 🚨 FIX: แสดง Modal เมื่อมีคลาส is-active */
+/* 🛠️ FIX: ใช้ selector ให้ตรงกับ script.js */
+.popup-overlay.popup--active { 
     display: flex; 
 }
 
@@ -290,6 +299,9 @@ main {
     align-items: center;
     justify-content: center;
     gap: 5px;
+    /* 🛠️ FIX: เพิ่ม position และ z-index เพื่อให้คลิกปุ่มได้แน่นอน */
+    position: relative; 
+    z-index: 10;
 }
 .td-price-value {
     text-align: right;
@@ -316,6 +328,7 @@ main {
     border:1px solid #ccc;
     cursor: pointer;
     font-weight: 500;
+    transition: all 0.2s;
 }
 .spicy-option input:checked + .chip { 
     border-color: var(--orange); 
@@ -348,7 +361,12 @@ main {
     cursor: pointer;
     transition: background-color 0.2s;
 }
-.btn-primary:hover { background: #5a0d13; }
+.btn-primary:hover:not(:disabled) { background: #5a0d13; }
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
 .btn-secondary {
     background: #ccc;
