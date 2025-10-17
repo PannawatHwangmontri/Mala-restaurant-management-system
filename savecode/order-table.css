@@ -1,0 +1,338 @@
+/* order-table.css */
+:root {
+  --bg-top: #1d1c20;
+  --bg-bottom: #6e1017;
+  --panel-bg: #f6e6e9; /* สีพื้นหลังใหญ่ของ Panel */
+  --header-bg: #c90000; /* สีแดงของแถบ Nav */
+  --header-text: #ffffff;
+  --table-head-bg: #ffffff; /* สีพื้นหลังหัวตาราง */
+  --table-row-bg: #fdf6f7; /* สีพื้นหลังแถวตาราง */
+  --btn-cancel: #c90000; /* สียกเลิก */
+  --btn-confirm: #358d3d; /* สียืนยัน */
+  --btn-complete: #2a6496; /* สีใหม่: สำหรับเสร็จสิ้น (น้ำเงิน) */
+  --r-lg: 28px;
+  --r-md: 18px;
+  --r-pill: 999px; 
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.12);
+  --mala-red: #c90000; 
+  --table-detail-head-bg: #e0e0e0; /* สีพื้นหลังหัวตารางรายละเอียด */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: "Prompt", sans-serif; 
+    background: linear-gradient(180deg,var(--bg-top),var(--bg-bottom)) fixed; 
+    color: #222; 
+    line-height: 1.5; 
+    min-height: 100vh;
+}
+.site-logo { height: 50px; }
+.logo-container { padding: 10px 20px; }
+
+/* Grid Layout สำหรับหน้าจอหลัก */
+.management-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(300px, 2fr) 1fr; /* รายการ 2 ส่วน, รายละเอียด 1 ส่วน */
+    gap: 20px;
+    grid-template-areas: 
+        "nav nav"
+        "list detail";
+}
+.admin-nav {
+    grid-area: nav;
+    margin-bottom: 0; 
+    display: flex;
+    background: var(--header-bg);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
+}
+.nav-btn {
+    text-decoration: none;
+    color: var(--header-text);
+    padding: 15px 25px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.nav-btn--active {
+    background: #a80000; 
+    border-radius: var(--r-lg);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mala-red);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--mala-red);
+}
+
+
+/* ==================================== */
+/* สไตล์สำหรับ ORDER LIST PANEL (ซ้าย) */
+/* ==================================== */
+.order-list-panel {
+    grid-area: list;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
+}
+.table--list-head, .order-row {
+    display: flex; 
+}
+.table--list-head {
+    background: var(--table-head-bg);
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    padding: 10px 5px;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.9rem;
+}
+.order-list-body {
+    max-height: 80vh; 
+    overflow-y: auto; 
+}
+.order-row {
+    cursor: pointer;
+    background: var(--table-row-bg);
+    border-bottom: 1px solid #eee;
+    padding: 12px 5px;
+    transition: background 0.2s;
+    align-items: center; 
+}
+.order-row:hover {
+    background: #f0e0e3;
+}
+.order-row.active {
+    background: #ffd6e0; 
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(201, 0, 0, 0.3);
+}
+
+/* กำหนดความกว้างคอลัมน์รายการออเดอร์ */
+.table--list-head .th, .order-row .td {
+    text-align: center;
+    flex-shrink: 0; 
+}
+.table--list-head .th-id, .order-row .td-id { width: 8%; } 
+.table--list-head .th-datetime, .order-row .td-datetime { width: 22%; font-size: 0.85rem; } 
+.table--list-head .th-total, .order-row .td-total { width: 14%; font-weight: bold; color: var(--mala-red); } 
+.table--list-head .th-spicy, .order-row .td-spicy { width: 13%; } 
+.table--list-head .th-status, .order-row .td-status { width: 18%; } 
+.table--list-head .th-action, .order-row .td-action { width: 15%; } 
+.table--list-head .th-delete, .order-row .td-delete { width: 10%; } /* คอลัมน์สำหรับปุ่มลบ */
+
+/* Chip สำหรับสถานะ */
+.status-chip {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--r-pill);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-chip--pending { background: #ff8a3d; } 
+.status-chip--confirmed { background: #358d3d; } 
+.status-chip--cancelled { background: #555555; } 
+.status-chip--completed { background: var(--btn-complete); } /* สถานะเสร็จสิ้นใหม่ */
+
+.spicy-chip--mild { background: #358d3d; } 
+.spicy-chip--medium { background: #ffb169; } 
+.spicy-chip--hot { background: #ff5555; } 
+
+.btn--view-detail {
+    background: #2a6496; 
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* สไตล์สำหรับปุ่มลบออเดอร์ในรายการ */
+.btn-delete-order {
+    background: none;
+    border: 1px solid #ff5555;
+    color: #ff5555;
+    padding: 3px 6px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+.btn-delete-order:hover {
+    background: #ff5555;
+    color: white;
+}
+.btn-delete-order:active {
+    background: #c90000;
+}
+
+
+/* ==================================== */
+/* สไตล์สำหรับ ORDER DETAIL PANEL (ขวา) */
+/* ==================================== */
+.order-detail-panel {
+    grid-area: detail;
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
+    display: flex; 
+    flex-direction: column;
+    gap: 20px;
+}
+.order-panel-header {
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--mala-red);
+}
+.order-id-title {
+    font-size: 1.8rem;
+    color: var(--mala-red);
+    margin-bottom: 5px;
+}
+.order-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* ตารางรายละเอียดสินค้า */
+.order-items-table {
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding-right: 5px; 
+}
+.table--detail-head {
+    background: var(--table-detail-head-bg); 
+    color: #333;
+    padding: 10px 10px;
+    border-radius: var(--r-md);
+    font-size: 0.9rem;
+    display: flex;
+}
+.order-items-body {
+    padding: 10px 0;
+}
+.tr--item-detail {
+    display: flex;
+    padding: 8px 10px;
+    border-bottom: 1px dashed #ddd; 
+    align-items: center;
+}
+.tr--item-detail:last-child {
+    border-bottom: none;
+}
+
+/* กำหนดความกว้างคอลัมน์ในตารางรายละเอียด (4 คอลัมน์) */
+.th-menu-detail, .td-menu-detail { width: 45%; text-align: left; font-weight: 500; } 
+.th-qty-detail, .td-qty-detail { width: 15%; text-align: center; } 
+.th-price-detail, .td-price-detail { width: 20%; text-align: right; font-size: 0.9rem; color: #555; } 
+.th-total-detail, .td-total-detail { width: 20%; text-align: right; font-weight: bold; color: var(--mala-red); } 
+
+/* ส่วนท้าย */
+.order-panel-footer {
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+}
+.footer-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+.spicy-level-box {
+    text-align: center;
+}
+.spicy-chip {
+    padding: 5px 15px;
+    border-radius: 999px;
+    color: white;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: 5px;
+}
+.totals-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+.total-qty-pill, .total-price-pill {
+    background: #fff;
+    padding: 5px 10px;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    color: var(--mala-red);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+.btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: var(--r-pill);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn--cancel {
+    background: var(--btn-cancel);
+}
+.btn--confirm {
+    background: var(--btn-confirm);
+}
+.btn--complete {
+    background: var(--btn-complete); /* สไตล์ปุ่มใหม่ */
+}
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 850px) {
+    .management-container {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "nav"
+            "list"
+            "detail";
+    }
+    .table--list-head .th-spicy, .order-row .td-spicy { display: none; } 
+    .footer-summary-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    .action-buttons {
+        justify-content: center;
+    }
+    /* ปรับคอลัมน์ตารางรายการ (สำหรับมือถือ 6 คอลัมน์) */
+    .table--list-head .th-id, .order-row .td-id { width: 10%; } 
+    .table--list-head .th-datetime, .order-row .td-datetime { width: 30%; } 
+    .table--list-head .th-total, .order-row .td-total { width: 20%; } 
+    .table--list-head .th-status, .order-row .td-status { width: 20%; } 
+    .table--list-head .th-action, .order-row .td-action { width: 20%; display: none; } 
+    .table--list-head .th-delete, .order-row .td-delete { width: 20%; } 
+    
+    /* ปรับให้คอลัมน์ตารางละเอียดสำหรับมือถือ (4 คอลัมน์) */
+    .th-menu-detail, .td-menu-detail { width: 40%; } 
+    .th-qty-detail, .td-qty-detail { width: 20%; } 
+    .th-price-detail, .td-price-detail { width: 20%; } 
+    .th-total-detail, .td-total-detail { width: 20%; } 
+}

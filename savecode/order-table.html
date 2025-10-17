@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการออเดอร์</title>
+    <link rel="stylesheet" href="order-table.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="logo-container">
+        <img src="images/mala_logo.png" alt="โลโก้หมาล่า" class="site-logo"> 
+    </div>
+
+    <main class="management-container">
+        
+        <header class="admin-nav">
+            <a href="#" class="nav-btn nav-btn--active">ตารางออเดอร์</a>
+            <a href="product-management.html" class="nav-btn">จัดการสินค้า</a> 
+        </header>
+
+        <section class="order-list-panel">
+            <h2 class="section-title">รายการออเดอร์ที่รับมา</h2>
+            
+            <div class="table table--head table--list-head">
+                <div class="th th-id">ID</div>
+                <div class="th th-datetime">วันที่/เวลา</div>
+                <div class="th th-total">รวม</div>
+                <div class="th th-spicy">เผ็ด</div>
+                <div class="th th-status">สถานะ</div>
+                <div class="th th-action"></div>
+                <div class="th th-delete">ลบ</div>
+            </div>
+            
+            <div class="order-list-body" id="orderListBody">
+                <p id="noOrdersMessage" style="text-align: center; padding: 20px; color: #555;" hidden>ไม่มีออเดอร์ที่ค้างอยู่</p>
+            </div>
+
+            <template id="orderListRowTemplate">
+                <div class="tr order-row" role="button" tabindex="0">
+                    <div class="td td-id"></div>
+                    <div class="td td-datetime"></div>
+                    <div class="td td-total"></div>
+                    <div class="td td-spicy"></div>
+                    <div class="td td-status"></div>
+                    <div class="td td-action">
+                        <button class="btn btn--view-detail">ดูรายละเอียด</button>
+                    </div>
+                    <div class="td td-delete">
+                        <button class="btn-delete-order" aria-label="ลบออเดอร์">❌</button>
+                    </div> 
+                </div>
+            </template>
+        </section>
+
+        <section class="order-detail-panel" id="orderDetailPanel" aria-labelledby="orderIdTitle" hidden> 
+            
+            <header class="order-panel-header">
+                <h2 id="orderIdTitle" class="order-id-title">ออเดอร์ที่...</h2>
+                <div class="order-meta">
+                    <p class="order-meta-date">วันที่</p>
+                    <p class="order-meta-time">เวลา</p>
+                </div>
+            </header>
+
+            <div class="order-items-table">
+                <div class="table table--head table--detail-head"> 
+                    <div class="th th-menu-detail">เมนู</div>
+                    <div class="th th-qty-detail">จำนวน</div>
+                    <div class="th th-price-detail">ราคาต่อหน่วย</div>
+                    <div class="th th-total-detail">รวม</div>
+                </div>
+                
+                <div class="table table--body order-items-body" id="orderItemsBody">
+                </div>
+                
+                <template id="orderRowTemplate">
+                    <div class="tr tr--item-detail"> 
+                        <div class="td td-menu-detail"></div>
+                        <div class="td td-qty-detail"></div>
+                        <div class="td td-price-detail"></div>
+                        <div class="td td-total-detail"></div>
+                    </div>
+                </template>
+            </div>
+
+            <footer class="order-panel-footer">
+                
+                <div class="footer-summary-row">
+                    <div class="spicy-level-box">
+                        <p>ระดับความเผ็ด</p>
+                        <span class="spicy-chip" id="orderSpicyChip"></span>
+                    </div>
+
+                    <div class="totals-box">
+                        <p>จำนวนไม้รวม <span class="total-qty-pill" id="orderTotalCount">0</span> ไม้</p>
+                        <p>ราคารวม <span class="total-price-pill" id="orderTotalPrice">0</span> บาท</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn--cancel" disabled>ยกเลิก</button>
+                    <button class="btn btn--confirm" disabled>รับออเดอร์</button>
+                    <button class="btn btn--complete" disabled>เสร็จสิ้น</button> </div>
+            </footer>
+        </section>
+
+    </main>
+    <script defer src="order-table.js"></script>
+</body>
+</html>
