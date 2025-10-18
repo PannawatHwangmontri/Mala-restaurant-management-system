@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการสินค้า</title>
+    <link rel="stylesheet" href="order-table.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* product-management.css (แทรกเป็น style เพื่อความสะดวก) */
+        .management-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "nav nav"
+                "form list";
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-form-panel {
+            grid-area: form;
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .product-list-panel {
+            grid-area: list;
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .product-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .product-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .product-form input[type="text"],
+        .product-form input[type="number"],
+        .product-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: var(--r-md);
+            box-sizing: border-box;
+        }
+        
+        /* ปรับสไตล์สำหรับ input type=file ให้ดูดีขึ้น */
+        .product-form input[type="file"] {
+            padding: 5px; /* ลด Padding เล็กน้อย */
+            border: 1px solid #ccc;
+            border-radius: var(--r-md);
+        }
+        
+        .image-preview {
+            margin-top: 10px;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+        
+        .image-preview p {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .product-form .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ตารางรายการสินค้า */
+        .table--product-list .tr {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1.5fr 2fr;
+            padding: 10px 0;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table--product-head {
+            background-color: var(--table-detail-head-bg);
+            font-weight: 600;
+            border-radius: var(--r-md);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tr--product-item {
+            background-color: var(--table-row-bg);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px;
+            border-radius: var(--r-md);
+        }
+        
+        .tr--product-item:hover {
+            background-color: #ffe0e6;
+        }
+
+        .td-action button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 0.85em;
+        }
+        
+        /* Mobile adjustment */
+        @media (max-width: 850px) {
+            .management-container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "nav"
+                    "form"
+                    "list";
+            }
+            .table--product-list .tr {
+                grid-template-columns: 1fr 2fr 1fr 1fr; /* ซ่อน SKU ในมือถือ */
+            }
+            .table--product-head .th-sku, .tr--product-item .td-sku {
+                display: none;
+            }
+            .td-action {
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="images/mala_logo.png" alt="โลโก้หมาล่า" class="site-logo"> 
+    </div>
+
+    <main class="management-container">
+        
+        <header class="admin-nav" style="grid-area: nav;">
+            <a href="order-table.html" class="nav-btn">ตารางออเดอร์</a>
+            <a href="#" class="nav-btn nav-btn--active">จัดการสินค้า</a> 
+        </header>
+
+        <section class="product-form-panel">
+            <h2 class="section-title">เพิ่ม/แก้ไขสินค้า</h2>
+            <form id="productForm" class="product-form">
+                <input type="hidden" id="productId" name="id">
+                <input type="hidden" id="productImageBase64" name="imageBase64">
+                
+                <div class="form-group">
+                    <label for="productSku">SKU (รหัสสินค้า):</label>
+                    <input type="text" id="productSku" name="sku" required pattern="[a-z0-9-]+" title="ใช้ได้เฉพาะตัวอักษรพิมพ์เล็ก ตัวเลข และขีดกลางเท่านั้น">
+                </div>
+
+                <div class="form-group">
+                    <label for="productName">ชื่อสินค้า:</label>
+                    <input type="text" id="productName" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productCategory">หมวดหมู่:</label>
+                    <select id="productCategory" name="category" required>
+                        <option value="cat-fresh">หมวดของสด</option>
+                        <option value="cat-meat">หมวดเนื้อสัตว์</option>
+                        <option value="cat-veggie">หมวดผัก</option>
+                        <option value="cat-other">หมวดอื่นๆ</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">ราคา/ไม้ (บาท):</label>
+                    <input type="number" id="productPrice" name="price" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImageFile">รูปภาพสินค้า:</label>
+                    <input type="file" id="productImageFile" name="imageFile" accept="image/png, image/jpeg" required>
+                    <div class="image-preview" id="imagePreview">
+                        <p>ไม่มีรูปภาพ</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons form-actions">
+                    <button type="submit" class="btn btn--confirm" id="saveProductBtn">บันทึกสินค้า</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display:none;">ยกเลิก</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="product-list-panel">
+            <h2 class="section-title">รายการสินค้าทั้งหมด</h2>
+            
+            <div class="table table--product-list">
+                <div class="table--product-head tr">
+                    <div class="th th-sku">SKU</div>
+                    <div class="th th-name">ชื่อสินค้า</div>
+                    <div class="th th-price">ราคา</div>
+                    <div class="th th-category">หมวดหมู่</div>
+                    <div class="th th-action">จัดการ</div>
+                </div>
+                <div class="table--product-body" id="productListBody">
+                    </div>
+            </div>
+
+            <template id="productRowTemplate">
+                <div class="tr tr--product-item">
+                    <div class="td td-sku"></div>
+                    <div class="td td-name"></div>
+                    <div class="td td-price"></div>
+                    <div class="td td-category"></div>
+                    <div class="td td-action">
+                        <button class="btn btn-secondary btn-edit">แก้ไข</button>
+                        <button class="btn btn--cancel btn-delete">ลบ</button>
+                    </div>
+                </div>
+            </template>
+
+        </section>
+
+    </main>
+    <script defer src="product-management.js"></script>
+</body>
+</html>

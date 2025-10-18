@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เมนูหมาล่า</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="logo-container">
+    <img src="images/mala_logo.png" alt="โลโก้ร้าน" class="site-logo">
+  </div>
+  <main>
+    <section class="menu-box">
+      <h1 class="menu-title">เมนู</h1>
+
+      <div class="menu-panel">
+        <div class="menu-category" id="menuCategoryContainer">
+            </div>
+
+        <template id="categoryTemplate">
+            <section class="category" role="group">
+                <div class="category-header">
+                    <h2 class="category-title"></h2>
+                </div>
+                <ul class="item-list">
+                    </ul>
+            </section>
+        </template>
+
+        <template id="itemTemplate">
+            <li class="item">
+                <img src="" alt="" class="item-thumb">
+                <div class="info">
+                    <p class="item-name"></p>
+                    <p class="item-price"></p>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-qty btn-minus" data-action="minus" disabled>-</button>
+                    <span class="item-qty-count">0</span>
+                    <button class="btn-qty btn-plus" data-action="plus">+</button>
+                </div>
+            </li>
+        </template>
+
+      </div>
+    </section>
+  </main>
+
+  <footer id="orderBar" class="order-bar">
+    <div class="summary-info">
+      <span id="orderCount" class="total-count">0</span> ไม้, ราคารวม 
+      <span id="orderTotal" class="total-price">0</span> บาท
+    </div>
+    <button id="openSummary" class="btn btn-primary" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M14 13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6H1v-2h14v2h-1v7zM4 6h8v7H4V6z"/>
+            <path d="M7.5 10v4h1v-4h-1z"/>
+            <path fill-rule="evenodd" d="M12.43 3.193a.5.5 0 0 1 .536-.088l.551.294a.5.5 0 0 1 .283.475v.855a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5V3.874a.5.5 0 0 1 .283-.475l.551-.294a.5.5 0 0 1 .536.088l.64.444a.5.5 0 0 0 .618 0l.64-.444a.5.5 0 0 1 .536-.088l.551.294a.5.5 0 0 1 .283.475v.855a.5.5 0 0 1-.5.5h-1.5a.5.5 0 0 0 0 1h1.5a1.5 1.5 0 0 0 1.5-1.5V3.874a1.5 1.5 0 0 0-.85-1.378l-.551-.294a1.5 1.5 0 0 0-1.608.264l-.64.444a1.5 1.5 0 0 1-1.854 0l-.64-.444a1.5 1.5 0 0 0-1.608-.264l-.551.294a1.5 1.5 0 0 0-.85 1.378v.855a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5V3.874a.5.5 0 0 1 .283-.475l.551-.294a.5.5 0 0 1 .536.088l.64.444a.5.5 0 0 0 .618 0l.64-.444a.5.5 0 0 1 .536-.088l.551.294a.5.5 0 0 1 .283.475v.855a.5.5 0 0 1-.5.5H3v-.855a.5.5 0 0 1 .283-.475l.551-.294a.5.5 0 0 1 .536.088l.64.444a.5.5 0 0 0 .618 0l.64-.444a.5.5 0 0 1 .536-.088l.551.294a.5.5 0 0 1 .283.475v.855a.5.5 0 0 1-.5.5H12a.5.5 0 0 0 0 1h.43z"/>
+        </svg>
+        สรุปออเดอร์
+    </button>
+  </footer>
+
+  <div id="summaryModal" class="modal">
+    <div class="popup">
+      <header class="popup__header">
+        <h2 class="popup__title">สรุปรายการและยืนยันออเดอร์</h2>
+        <button class="btn-close" data-close="true">&times;</button>
+      </header>
+
+      <section class="popup__body">
+        <ul id="summaryList" class="summary-list">
+            </ul>
+        
+        <template id="summaryRowTemplate">
+            <li class="summary-row">
+                <span class="summary-name"></span>
+                <span class="summary-qty"></span>
+                <span class="summary-total"></span>
+            </li>
+        </template>
+        
+        <div class="checkout-detail">
+            <p>โปรดเลือกระดับความเผ็ด:</p>
+            <form id="spicyLevelForm"> 
+                <div class="spicy-level-group">
+                    <input type="radio" id="spicy-0" name="spicy" value="0" checked>
+                    <label for="spicy-0">ไม่เผ็ด</label>
+
+                    <input type="radio" id="spicy-1" name="spicy" value="1">
+                    <label for="spicy-1">เผ็ดน้อย</label>
+
+                    <input type="radio" id="spicy-2" name="spicy" value="2">
+                    <label for="spicy-2">เผ็ดกลาง</label>
+
+                    <input type="radio" id="spicy-3" name="spicy" value="3">
+                    <label for="spicy-3">เผ็ดมาก</label>
+                </div>
+            </form>
+            
+            <p>หมายเหตุ (ถ้ามี):</p>
+            <textarea id="orderNote" rows="3" placeholder="เช่น ไม่ใส่ผักชี, ขอช้อนสั้น..."></textarea>
+        </div>
+        
+      </section>
+
+      <footer class="popup__footer">
+        <div class="footer-left">
+          จำนวนไม้รวม <span id="modalCount">0</span> ไม้, ราคารวม <span id="modalTotal">0</span> บาท
+        </div>
+        <div class="footer-right">
+          <button id="placeOrder" class="btn btn-primary">ยืนยันและสั่งอาหาร</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script defer src="script.js"></script>
+</body>
+</html>

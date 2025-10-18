@@ -1,0 +1,392 @@
+/* order-table.css */
+:root {
+  --bg-top: #1d1c20;
+  --bg-bottom: #6e1017;
+  --panel-bg: #f6e6e9; /* สีพื้นหลังใหญ่ของ Panel */
+  --header-bg: #c90000; /* สีแดงของแถบ Nav */
+  --header-text: #ffffff;
+  --table-head-bg: #ffffff; /* สีพื้นหลังหัวตาราง */
+  --table-row-bg: #fdf6f7; /* สีพื้นหลังแถวตาราง */
+  --btn-cancel: #c90000; /* สียกเลิก */
+  --btn-confirm: #358d3d; /* สียืนยัน */
+  --btn-complete: #2a6496; /* สีใหม่: สำหรับเสร็จสิ้น (น้ำเงิน) */
+  --r-lg: 28px;
+  --r-md: 18px;
+  --r-pill: 999px; 
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.12);
+  --mala-red: #c90000; 
+  --table-detail-head-bg: #e0e0e0; /* สีพื้นหลังหัวตารางรายละเอียด */
+  --text-dark: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: 'Prompt', sans-serif; 
+    line-height: 1.6;
+    background: linear-gradient(to bottom, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    min-height: 100vh;
+    color: var(--text-dark);
+}
+
+.logo-container {
+    text-align: center;
+    padding: 20px 0;
+}
+.site-logo {
+    width: 150px;
+    height: auto;
+    border-radius: var(--r-md);
+}
+
+/* Management Layout */
+.management-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--panel-bg);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-soft);
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* ตารางรายการ 2 ส่วน, รายละเอียด 1 ส่วน */
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    grid-template-areas: 
+        "nav nav"
+        "list detail";
+    min-height: 80vh;
+}
+
+/* Admin Nav */
+.admin-nav {
+    grid-area: nav;
+    display: flex;
+    background-color: var(--header-bg);
+    border-radius: var(--r-md);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+.nav-btn {
+    text-decoration: none;
+    color: var(--header-text);
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 1.1em;
+    border-radius: var(--r-md);
+    transition: background-color 0.2s;
+}
+.nav-btn:hover { background-color: rgba(255,255,255,0.1); }
+.nav-btn--active {
+    background-color: rgba(0,0,0,0.2);
+    font-weight: 700;
+}
+
+/* Order List Panel */
+.order-list-panel {
+    grid-area: list;
+    background-color: #ffffff;
+    border-radius: var(--r-md);
+    padding: 15px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+}
+.section-title {
+    font-size: 1.5em;
+    color: var(--mala-red);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Status Filter */
+.nav-status-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.nav-btn-status {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    color: var(--text-dark);
+    padding: 8px 15px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.nav-btn-status:hover:not(.active) {
+    background: #e0e0e0;
+}
+.nav-btn-status.active {
+    background: var(--mala-red);
+    color: var(--header-text);
+    border-color: var(--mala-red);
+    font-weight: 600;
+}
+
+/* List Table Structure */
+.table--list-head {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-head-bg);
+    padding: 10px;
+    font-weight: 700;
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    border-bottom: 2px solid #ccc;
+}
+.order-list-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.th, .td {
+    text-align: center;
+    padding: 5px;
+}
+.order-row {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr 1fr 1.2fr 1.5fr; /* 6 คอลัมน์ */
+    background-color: var(--table-row-bg);
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.1s, box-shadow 0.2s;
+}
+.order-row:hover {
+    background-color: #f7e9eb;
+    box-shadow: 0 0 5px rgba(201, 0, 0, 0.2);
+}
+.order-row.selected {
+    background-color: #fff0f5;
+    border-left: 5px solid var(--mala-red);
+    padding-left: 0;
+}
+.order-row.selected .td-id {
+    padding-left: calc(5px - 5px); /* ชดเชย border-left */
+}
+
+/* Status Chips in List */
+.td-status span {
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+    font-size: 0.8em;
+    font-weight: 600;
+}
+.status-pending { background-color: #fff2cc; color: #b45f06; }
+.status-confirmed { background-color: #d9edf7; color: #31708f; }
+.status-completed { background-color: #dff0d8; color: #3c763d; }
+.status-cancelled { background-color: #f2dede; color: #a94442; }
+
+/* Order Detail Panel */
+.order-detail-panel {
+    grid-area: detail;
+    background-color: #ffffff;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Placeholder message when no order is selected */
+.order-detail-panel.empty:after { 
+    content: "กรุณาเลือกออเดอร์จากรายการ"; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-grow: 1; 
+    font-size: 1.2em; 
+    color: #aaa; 
+    text-align: center; 
+    padding: 50px; 
+}
+.order-detail-panel.empty > :not(.detail-header) { display: none; }
+
+/* Detail Header */
+.detail-header {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.detail-id {
+    font-size: 1.5em;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+.order-meta {
+    font-size: 0.9em;
+    color: #666;
+}
+.order-meta-time {
+    margin-left: 5px;
+    font-weight: 500;
+}
+
+/* Detail Body (Item List) */
+.detail-body {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.detail-body .section-title {
+    font-size: 1.1em;
+    color: #666;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.tr--item-detail-head {
+    display: grid;
+    grid-template-columns: 4fr 1.5fr 1.5fr 1.5fr;
+    font-weight: 600;
+    padding: 8px 0;
+    background-color: var(--table-detail-head-bg);
+    border-radius: var(--r-md);
+    margin-bottom: 5px;
+}
+.tr--item-detail {
+    display: grid;
+    grid-template-columns: 4fr 1.5fr 1.5fr 1.5fr;
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 0.95em;
+}
+.td-menu-detail { text-align: left; padding-left: 10px; }
+.td-qty-detail, .td-price-detail, .td-total-detail { text-align: center; }
+.td-total-detail { font-weight: 600; color: var(--mala-red); }
+
+/* Detail Footer (Summary & Actions) */
+.order-panel-footer {
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    margin-top: 15px;
+}
+.footer-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.spicy-level-box p, .totals-box p {
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+}
+.spicy-chip {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: var(--mala-red);
+    color: white;
+    border-radius: var(--r-pill);
+    font-weight: 600;
+    font-size: 0.95em;
+    box-shadow: 0 2px 4px rgba(201, 0, 0, 0.3);
+}
+.totals-box {
+    text-align: right;
+}
+.total-qty-pill, .total-price-pill {
+    font-weight: 700;
+    font-size: 1.2em;
+    color: var(--mala-red);
+}
+
+/* 🎯 NEW: CSS สำหรับกล่องหมายเหตุ */
+.order-note-box {
+    padding: 10px 0;
+    margin-top: 10px;
+    font-size: 0.95em;
+    border-top: 1px solid #eee;
+}
+
+.order-note-box p {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+#orderNoteDisplay {
+    display: block;
+    padding: 8px 10px;
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    border-radius: var(--r-md);
+    white-space: pre-wrap; /* เพื่อให้ขึ้นบรรทัดใหม่ได้ */
+}
+/* 🎯 END NEW CSS */
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    font-size: 1em;
+}
+.btn--cancel {
+    background-color: var(--btn-cancel);
+    color: white;
+}
+.btn--cancel:hover:not(:disabled) { background-color: #a00; }
+.btn--confirm {
+    background-color: var(--btn-confirm);
+    color: white;
+}
+.btn--confirm:hover:not(:disabled) { background-color: #2b7433; }
+.btn--complete {
+    background-color: var(--btn-complete);
+    color: white;
+}
+.btn--complete:hover:not(:disabled) { background-color: #205077; }
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.no-orders {
+    text-align: center;
+    padding: 30px;
+    color: #aaa;
+    font-size: 1.1em;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .management-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas: 
+            "nav"
+            "list"
+            "detail";
+    }
+}
+
+@media (max-width: 600px) {
+    .management-container {
+        padding: 10px;
+    }
+    .order-list-panel, .order-detail-panel {
+        padding: 10px;
+    }
+    .table--list-head, .order-row {
+        grid-template-columns: 0.8fr 2fr 1.5fr 1.5fr; /* ลบคอลัมน์จำนวนไม้ */
+    }
+    .table--list-head .th-qty, .order-row .td-qty { display: none; } 
+    .th, .td { padding: 3px; }
+
+    .footer-summary-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .action-buttons {
+        justify-content: center;
+    }
+}

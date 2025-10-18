@@ -1,0 +1,499 @@
+/* style.css */
+:root {
+  --bg-top: #1d1c20;
+  --bg-bottom: #6e1017;
+  --outer-card: #f6c3cd;
+  --inner-card: #fff7ed;
+  --card: #f3f4f6;
+  --pill: #ffffff;
+  --text: #222222;
+  --orange: #ff8a3d;
+  --orange-2: #ffb169;
+  --r-lg: 28px;
+  --r-md: 18px;
+  --r-pill: 999px;
+  --shadow-soft: 0 10px 30px rgba(0,0,0,.12);
+  --shadow-card: 0 6px 18px rgba(0,0,0,.08);
+  --ring: 0 0 0 3px rgba(255,138,61,.25);
+
+  /* เพิ่มตัวแปรสีใหม่สำหรับ UI ที่ต้องการ */
+  --menu-bg-color: #f6e6e9; /* สีพื้นหลังของ Menu Panel ตามภาพ */
+  --category-header-bg: #ffe4db; /* สีพื้นหลังส่วนหัวของหมวดหมู่ */
+  --item-bg-color: #fff; /* สีพื้นหลังของรายการสินค้าแต่ละชิ้น */
+  --item-border-radius: 12px; /* รัศมีขอบของ Item Card */
+  --mala-red: #c90000;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 120px; /* เว้นที่ว่างสำหรับ Order Bar */
+}
+
+/* ----------------------------------------
+   Header & Logo
+---------------------------------------- */
+.logo-container {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.site-logo {
+  max-width: 150px;
+  height: auto;
+}
+
+/* ----------------------------------------
+   Main Content Layout
+---------------------------------------- */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.menu-box {
+  background-color: var(--menu-bg-color);
+  padding: 30px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.menu-title {
+  text-align: center;
+  color: var(--mala-red);
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 2em;
+}
+
+.menu-panel {
+  margin-top: 20px;
+}
+
+.menu-category {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.category-header {
+  background-color: var(--category-header-bg);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: var(--r-md);
+  margin-bottom: 15px;
+}
+
+.category h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+
+/* ----------------------------------------
+   Item List (Menu Items)
+---------------------------------------- */
+.item-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  list-style: none;
+}
+.item {
+    background-color: var(--item-bg-color);
+    border-radius: var(--item-border-radius);
+    box-shadow: var(--shadow-card);
+    padding: 10px;
+    display: grid;
+    /* 🎯 ปรับ Grid Layout: รูป | ข้อมูล | ปุ่มควบคุม */
+    grid-template-columns: 80px 1fr 100px; 
+    gap: 10px;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    text-align: left; /* เปลี่ยนจาก center */
+}
+.item:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); 
+}
+.item-thumb {
+    width: 80px; /* ถูกกำหนดโดย grid column */
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 0; /* ล้าง margin เก่า */
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+.item .info {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    margin: 0; 
+}
+.item-name { 
+    font-weight: 600; 
+    margin-bottom: 5px; 
+    font-size: 1.1em;
+}
+.item-price { 
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+/* 🎯 NEW: Quantity Control */
+.item-actions {
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* จัดให้อยู่ขวาของ Item Card */
+    gap: 5px;
+    height: 40px; 
+}
+
+.btn-qty {
+    background-color: var(--orange);
+    color: white;
+    border: none;
+    width: 35px; /* ขนาดปุ่ม */
+    height: 35px; /* ขนาดปุ่ม */
+    border-radius: 50%; /* ทำให้เป็นวงกลม */
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0; /* ป้องกันไม่ให้ปุ่มหด */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+.btn-qty:hover:not(:disabled) {
+    background-color: var(--mala-red); /* เปลี่ยนสีเมื่อ hover */
+    transform: scale(1.05);
+}
+
+.btn-qty:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #ccc;
+    box-shadow: none;
+}
+
+.item-qty-count {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1.1rem;
+    min-width: 20px; /* กำหนดความกว้างขั้นต่ำให้ตัวเลข */
+    text-align: center;
+}
+
+
+/* ----------------------------------------
+   Order Bar (Footer)
+---------------------------------------- */
+.order-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--mala-red);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+.summary-info {
+  font-size: 1.2em;
+  font-weight: 500;
+}
+.total-count, .total-price {
+  font-weight: 700;
+  font-size: 1.3em;
+  color: var(--orange);
+}
+.order-bar .btn-primary {
+  background-color: var(--orange);
+  color: var(--text);
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--r-md);
+  font-weight: 600;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.order-bar .btn-primary:hover:not(:disabled) {
+  background-color: var(--orange-2);
+}
+.order-bar .btn-primary:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+}
+
+
+/* ----------------------------------------
+   Modal/Popup
+---------------------------------------- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none; /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+.popup {
+  background-color: white;
+  border-radius: var(--r-lg);
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: var(--shadow-soft);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.popup__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+.popup__title {
+  font-size: 1.8em;
+  color: var(--mala-red);
+}
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  color: #aaa;
+}
+.btn-close:hover {
+    color: #888;
+}
+.popup__body {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 5px; /* เผื่อที่สำหรับ Scrollbar */
+}
+.summary-list {
+  list-style: none;
+  padding: 0;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 1.1em;
+}
+.summary-row:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.summary-name {
+  flex-grow: 1;
+}
+.summary-qty {
+  width: 50px;
+  text-align: center;
+}
+.summary-total {
+  font-weight: 600;
+  color: var(--mala-red);
+  width: 80px;
+  text-align: right;
+}
+
+/* 🎯 NEW: Checkout Detail (Spicy Level & Note) */
+.checkout-detail {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--r-md);
+    background-color: var(--card); 
+}
+
+.checkout-detail p {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+/* การจัดกลุ่มระดับความเผ็ด */
+.spicy-level-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.spicy-level-group label {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+/* ซ่อน Radio Button ดั้งเดิม */
+.spicy-level-group input[type="radio"] {
+    display: none;
+}
+
+/* เน้นเมื่อเลือก */
+.spicy-level-group input[type="radio"]:checked + label {
+    background-color: var(--mala-red, #c90000); 
+    color: white;
+    border-color: var(--mala-red, #c90000);
+    box-shadow: 0 0 0 2px rgba(201, 0, 0, 0.5); /* ใช้ ring shadow เพื่อความชัดเจน */
+    font-weight: 600;
+}
+
+/* Textarea สำหรับหมายเหตุ */
+#orderNote {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: var(--r-md);
+    font-family: 'Prompt', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ปรับ footer ของ Popup */
+.popup__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.footer-left {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.footer-left span {
+    color: var(--mala-red);
+    font-weight: 700;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .item {
+        /* ปรับ grid-template-columns ในหน้าจอ tablet/เล็ก */
+        grid-template-columns: 60px 1fr 80px; 
+        padding: 8px;
+    }
+    .item-thumb {
+        width: 60px;
+        height: 60px;
+    }
+    .item-actions {
+        gap: 5px;
+        justify-content: center;
+        width: 100%;
+    }
+    .btn-qty {
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+    }
+    .item-qty-count {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    main { padding: 10px; }
+    .menu-box { padding: 10px; }
+    .item-list {
+        grid-template-columns: 1fr; /* 1 คอลัมน์สำหรับมือถือ */
+    }
+    .item {
+        grid-template-columns: 80px 1fr 100px; /* กลับไปใช้ 80px เพื่อให้มีที่ทาง */
+        padding: 10px;
+    }
+    .popup {
+        padding: 20px;
+        margin: 10px;
+    }
+    .order-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 10px;
+    }
+    .summary-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .order-bar .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    .popup__footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .footer-left {
+        order: 2;
+    }
+    .footer-right {
+        order: 1;
+        width: 100%;
+    }
+    .popup__footer .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+    .spicy-level-group {
+        justify-content: space-between;
+    }
+    .spicy-level-group label {
+        flex-basis: 45%; /* ให้ label ย่อลงใน 2 คอลัมน์ */
+        text-align: center;
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+}
